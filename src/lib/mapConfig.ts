@@ -7,7 +7,7 @@ export const BASEMAP_URL = `pmtiles://${PUBLIC_BASEMAP_URL}`;
 export const MAP_CONFIG = {
 	center: [-3.42, 50.62] as [number, number],
 	zoom: 11,
-	minZoom: 7,
+	minZoom: 9,
 	maxZoom: 18,
 	pitch: 0,
 	bearing: 0,
