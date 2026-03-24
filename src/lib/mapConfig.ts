@@ -1,7 +1,8 @@
 import type { ExpressionSpecification } from 'maplibre-gl';
-import { PUBLIC_LSOA_TILES_URL } from '$env/static/public';
+import { PUBLIC_LSOA_TILES_URL, PUBLIC_BASEMAP_URL } from '$env/static/public';
 
 export const LSOA_URL = `pmtiles://${PUBLIC_LSOA_TILES_URL}`;
+export const BASEMAP_URL = `pmtiles://${PUBLIC_BASEMAP_URL}`;
 
 export const MAP_CONFIG = {
 	center: [-3.42, 50.62] as [number, number],

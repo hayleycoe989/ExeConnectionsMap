@@ -16,6 +16,7 @@
 	import {
 		MAP_CONFIG,
 		LSOA_URL,
+		BASEMAP_URL,
 		LSOA_FILL_PAINT,
 		LSOA_OUTLINE_PAINT,
 	} from '$lib/mapConfig';
@@ -26,10 +27,16 @@
 
 	let map = $state<MapType | undefined>();
 	let protocolReady = $state(false);
+	let mapStyle = $state<object | undefined>();
 
 	onMount(async () => {
 		await tick();
 		protocolReady = true;
+		const res = await fetch('/style.json');
+		const style = await res.json();
+		// Replace the hardcoded demo-bucket URL with the env-configured basemap URL
+		style.sources.protomaps.url = BASEMAP_URL;
+		mapStyle = style;
 		store.loadFromServer();
 	});
 
@@ -184,18 +191,18 @@
 {#if browser}
 	<div class="relative w-full h-full overflow-hidden">
 		<PMTilesProtocol />
-		{#if !protocolReady}
+		{#if !mapStyle}
 			<div class="absolute inset-0 flex items-center justify-center bg-background">
 				<div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
 			</div>
 		{/if}
-		{#if protocolReady}
+		{#if mapStyle}
 			<MapLibre
 				bind:map
 				class="w-full h-full"
 				{...MAP_CONFIG}
 				attributionControl={false}
-				style="/style.json"
+				style={mapStyle}
 				onclick={handleMapClick}
 			>
 				<NavigationControl position="bottom-right" />
