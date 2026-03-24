@@ -1,0 +1,12 @@
+LSOA/**
+*.geojson
+*.pmtiles
+node_modules/**
+migrations/**
+.svelte-kit/**
+.wrangler/**
+.DS_Store
+.env
+wrangler.toml
+wrangler.json
+wrangler.jsonc

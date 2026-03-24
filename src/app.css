@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.15 0.04 240);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.15 0.04 240);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.15 0.04 240);
+    --primary: oklch(0.35 0.10 220);
+    --primary-foreground: oklch(0.98 0.005 220);
+    --secondary: oklch(0.96 0.01 220);
+    --secondary-foreground: oklch(0.35 0.10 220);
+    --muted: oklch(0.96 0.01 220);
+    --muted-foreground: oklch(0.55 0.04 220);
+    --accent: oklch(0.93 0.03 210);
+    --accent-foreground: oklch(0.25 0.09 215);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.92 0.015 220);
+    --input: oklch(0.92 0.015 220);
+    --ring: oklch(0.50 0.10 215);
+    --chart-1: oklch(0.45 0.12 220);
+    --chart-2: oklch(0.60 0.12 185);
+    --chart-3: oklch(0.40 0.07 227);
+    --chart-4: oklch(0.83 0.19 84);
+    --chart-5: oklch(0.77 0.19 70);
+    --sidebar: oklch(0.15 0.06 228);
+    --sidebar-foreground: oklch(0.98 0.005 220);
+    --sidebar-primary: oklch(0.65 0.12 200);
+    --sidebar-primary-foreground: oklch(0.15 0.06 228);
+    --sidebar-accent: oklch(0.22 0.07 225);
+    --sidebar-accent-foreground: oklch(0.85 0.04 215);
+    --sidebar-border: oklch(0.28 0.07 225);
+    --sidebar-ring: oklch(0.50 0.10 215);
+}
+
+.dark {
+    --background: oklch(0.13 0.04 240);
+    --foreground: oklch(0.98 0.003 248);
+    --card: oklch(0.20 0.04 240);
+    --card-foreground: oklch(0.98 0.003 248);
+    --popover: oklch(0.20 0.04 240);
+    --popover-foreground: oklch(0.98 0.003 248);
+    --primary: oklch(0.65 0.12 200);
+    --primary-foreground: oklch(0.13 0.04 240);
+    --secondary: oklch(0.28 0.04 240);
+    --secondary-foreground: oklch(0.98 0.003 248);
+    --muted: oklch(0.28 0.04 240);
+    --muted-foreground: oklch(0.70 0.04 240);
+    --accent: oklch(0.28 0.04 240);
+    --accent-foreground: oklch(0.98 0.003 248);
+    --destructive: oklch(0.70 0.19 22);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.55 0.03 264);
+    --sidebar: oklch(0.12 0.05 228);
+    --sidebar-foreground: oklch(0.98 0.005 220);
+    --sidebar-primary: oklch(0.65 0.12 200);
+    --sidebar-primary-foreground: oklch(0.12 0.05 228);
+    --sidebar-accent: oklch(0.20 0.06 225);
+    --sidebar-accent-foreground: oklch(0.85 0.04 215);
+    --sidebar-border: oklch(0.25 0.07 225);
+    --sidebar-ring: oklch(0.50 0.10 215);
+}
+
+@theme inline {
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50 box-border;
+    }
+
+    body {
+        @apply bg-background text-foreground m-0 p-0;
+        font-family:
+            -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+            Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        touch-action: none;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    .modern-popup .maplibregl-popup-content {
+        @apply bg-transparent shadow-none p-0 border-none rounded-lg overflow-hidden;
+    }
+
+    .modern-popup .maplibregl-popup-tip {
+        @apply hidden;
+    }
+
+    .popup-container {
+        max-height: min(500px, 70vh);
+    }
+
+    .popup-container-sm {
+        max-height: min(380px, 55vh);
+    }
+
+    .popup-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+    }
+
+    .popup-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .popup-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .popup-scroll::-webkit-scrollbar-thumb {
+        background-color: hsl(var(--muted-foreground) / 0.3);
+        border-radius: 3px;
+    }
+
+    .popup-scroll::-webkit-scrollbar-thumb:hover {
+        background-color: hsl(var(--muted-foreground) / 0.5);
+    }
+
+    .wrap-break-word {
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+    }
+}
+
+.maplibregl-popup-content {
+    padding: 0 !important;
+}
+
+.maplibregl-marker {
+    will-change: transform;
+    contain: layout style;
+}
+
+.maplibregl-canvas {
+    will-change: transform;
+}
+
+@layer utilities {
+    .transition-transform {
+        transition-property: transform;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+
+    .transition-opacity {
+        transition-property: opacity;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 200ms;
+    }
+}
