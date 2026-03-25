@@ -3,8 +3,12 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
 
-export default defineConfig({
-	plugins: [cloudflare(), tailwindcss(), sveltekit()],
+export default defineConfig(({ command }) => ({
+	plugins: [
+		...(command === 'serve' ? [cloudflare()] : []),
+		tailwindcss(),
+		sveltekit(),
+	],
 	server: {
 		watch: {
 			ignored: ['**/.wrangler/**'],
@@ -21,4 +25,4 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ['maplibre-gl', 'svelte-maplibre-gl'],
 	},
-});
+}));
