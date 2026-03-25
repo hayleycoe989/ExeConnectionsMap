@@ -1,0 +1,14 @@
+{
+  "name": "river-exe",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": ".svelte-kit/cloudflare",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "river-exe-stakeholders",
+      "database_id": "1f7cf105-2342-4500-b672-2b3b9cfbc57c",
+      "preview_database_id": "1f7cf105-2342-4500-b672-2b3b9cfbc57c"
+    }
+  ]
+}
