@@ -79,7 +79,7 @@ function createStore() {
 		mode = { type: 'idle' };
 	}
 
-	function toggleLsoaAssignment(stakeholderId: string, lsoaCode: string) {
+	function toggleLsoaAssignment(stakeholderId: string, lsoaCode: string, sync = true) {
 		stakeholders = stakeholders.map((s) => {
 			if (s.id !== stakeholderId) return s;
 			const has = s.lsoaCodes.includes(lsoaCode);
@@ -90,6 +90,10 @@ function createStore() {
 					: [...s.lsoaCodes, lsoaCode],
 			};
 		});
+		if (sync) syncStakeholder(stakeholderId);
+	}
+
+	function syncStakeholder(stakeholderId: string) {
 		const updated = stakeholders.find((s) => s.id === stakeholderId);
 		if (updated) {
 			fetch(`/api/stakeholders/${stakeholderId}`, {
@@ -141,6 +145,7 @@ function createStore() {
 		enterSelectionMode,
 		finishSelectionMode,
 		toggleLsoaAssignment,
+		syncStakeholder,
 		isLsoaAssigned,
 		deleteStakeholder,
 		selectLsoa,

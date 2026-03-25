@@ -53,11 +53,32 @@
 		const mode = store.mode;
 		if (mode.type === 'lsoa-selection') {
 			map.getCanvas().style.cursor = 'crosshair';
+			map.dragPan.disable();
 		} else {
 			map.getCanvas().style.cursor = '';
+			map.dragPan.enable();
 		}
 		// Re-apply selected states for the active stakeholder
 		applySelectionStates();
+	});
+
+	// Drag-to-select state
+	let isDragging = false;
+	let dragAction: 'add' | 'remove' | null = null;
+	let draggedCodes = new Set<string>();
+
+	$effect(() => {
+		if (!map) return;
+		function onMouseUp() {
+			if (isDragging && store.mode.type === 'lsoa-selection') {
+				store.syncStakeholder(store.mode.stakeholderId);
+			}
+			isDragging = false;
+			dragAction = null;
+		}
+		const canvas = map.getCanvas();
+		canvas.addEventListener('mouseup', onMouseUp);
+		return () => canvas.removeEventListener('mouseup', onMouseUp);
 	});
 
 	let prevCodes = new Set<string>();
@@ -105,6 +126,33 @@
 		}
 	}
 
+	function applyDragToCode(code: string) {
+		if (!map || dragAction === null || draggedCodes.has(code)) return;
+		if (store.mode.type !== 'lsoa-selection') return;
+		draggedCodes.add(code);
+		const isAssigned = store.isLsoaAssigned(store.mode.stakeholderId, code);
+		if ((dragAction === 'add' && !isAssigned) || (dragAction === 'remove' && isAssigned)) {
+			store.toggleLsoaAssignment(store.mode.stakeholderId, code, false);
+		}
+		map.setFeatureState(
+			{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
+			{
+				stakeholderCount: store.lsoaCountMap.get(code) ?? 0,
+				selected: store.isLsoaAssigned(store.mode.stakeholderId, code),
+			},
+		);
+	}
+
+	function handleLsoaMouseDown(e: MapLayerMouseEvent) {
+		if (store.mode.type !== 'lsoa-selection') return;
+		const code = (e.features?.[0]?.properties as { LSOA21CD?: string } | undefined)?.LSOA21CD;
+		if (!code) return;
+		isDragging = true;
+		draggedCodes = new Set();
+		dragAction = store.isLsoaAssigned(store.mode.stakeholderId, code) ? 'remove' : 'add';
+		applyDragToCode(code);
+	}
+
 	function handleLsoaClick(e: MapLayerMouseEvent) {
 		if (!map) return;
 
@@ -115,16 +163,18 @@
 		if (!lsoaCode) return;
 
 		if (store.mode.type === 'lsoa-selection') {
-			store.toggleLsoaAssignment(store.mode.stakeholderId, lsoaCode);
-			// Immediate visual update
-			const isAssigned = store.isLsoaAssigned(store.mode.stakeholderId, lsoaCode);
-			map.setFeatureState(
-				{ source: 'lsoa-source', sourceLayer: 'lsoa', id: lsoaCode },
-				{
-					stakeholderCount: store.lsoaCountMap.get(lsoaCode) ?? 0,
-					selected: isAssigned,
-				},
-			);
+			// mousedown already handled this code; skip to avoid double-toggle
+			if (!draggedCodes.has(lsoaCode)) {
+				store.toggleLsoaAssignment(store.mode.stakeholderId, lsoaCode);
+				map.setFeatureState(
+					{ source: 'lsoa-source', sourceLayer: 'lsoa', id: lsoaCode },
+					{
+						stakeholderCount: store.lsoaCountMap.get(lsoaCode) ?? 0,
+						selected: store.isLsoaAssigned(store.mode.stakeholderId, lsoaCode),
+					},
+				);
+			}
+			draggedCodes = new Set();
 		} else {
 			store.selectLsoa({ lsoaCode, lsoaName, lngLat: [e.lngLat.lng, e.lngLat.lat] });
 		}
@@ -168,6 +218,7 @@
 			{ hovered: true },
 		);
 		handleCursorEnter();
+		if (isDragging) applyDragToCode(code);
 	}
 
 	function handleLsoaMouseLeave() {
@@ -227,6 +278,7 @@
 						sourceLayer="lsoa"
 						beforeId="address_label"
 						paint={LSOA_FILL_PAINT}
+						onmousedown={handleLsoaMouseDown}
 						onclick={handleLsoaClick}
 						onmousemove={handleLsoaMouseEnter}
 						onmouseleave={handleLsoaMouseLeave}
