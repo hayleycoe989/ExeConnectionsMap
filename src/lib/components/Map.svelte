@@ -37,7 +37,6 @@
 		// Replace the hardcoded demo-bucket URL with the env-configured basemap URL
 		style.sources.protomaps.url = BASEMAP_URL;
 		mapStyle = style;
-		store.loadFromServer();
 	});
 
 	// Re-apply feature states when stakeholder counts change
@@ -61,24 +60,31 @@
 		applySelectionStates();
 	});
 
+	let prevCodes = new Set<string>();
+
 	function applyFeatureStates(countMap: Map<string, number>) {
 		if (!map) return;
 		if (!map.isStyleLoaded()) {
 			map.once('idle', () => applyFeatureStates(store.lsoaCountMap));
 			return;
 		}
-		// Clear all existing stakeholder counts first
-		// (can't enumerate all features in a PMTiles source, so we iterate known codes)
-		const allCodes = new Set<string>();
-		for (const s of store.stakeholders) {
-			for (const code of s.lsoaCodes) allCodes.add(code);
+		// Zero out codes that are no longer present (e.g. after stakeholder deletion)
+		for (const code of prevCodes) {
+			if (!countMap.has(code)) {
+				map.setFeatureState(
+					{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
+					{ stakeholderCount: 0 },
+				);
+			}
 		}
-		for (const code of allCodes) {
+		// Apply current counts
+		for (const [code, count] of countMap) {
 			map.setFeatureState(
 				{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
-				{ stakeholderCount: countMap.get(code) ?? 0 },
+				{ stakeholderCount: count },
 			);
 		}
+		prevCodes = new Set(countMap.keys());
 	}
 
 	function applySelectionStates() {

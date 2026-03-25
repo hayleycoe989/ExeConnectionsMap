@@ -26,6 +26,10 @@ function createStore() {
 		hiddenCategories = next;
 	}
 
+	function init(initial: Stakeholder[]) {
+		stakeholders = initial;
+	}
+
 	async function loadFromServer() {
 		try {
 			const res = await fetch('/api/stakeholders');
@@ -116,6 +120,7 @@ function createStore() {
 		get stakeholders() {
 			return stakeholders;
 		},
+		init,
 		get mode() {
 			return mode;
 		},

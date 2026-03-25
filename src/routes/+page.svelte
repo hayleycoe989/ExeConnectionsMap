@@ -4,6 +4,10 @@
 	import Map from '$lib/components/Map.svelte';
 	import StakeholderPanel from '$lib/components/StakeholderPanel.svelte';
 	import StakeholderForm from '$lib/components/StakeholderForm.svelte';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
+	store.init(data.stakeholders);
 </script>
 
 <div class="flex w-screen h-screen overflow-hidden">

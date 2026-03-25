@@ -1,15 +1,20 @@
 <script lang="ts">
 	import { CHOROPLETH_COLOURS } from '$lib/mapConfig';
+	import { store } from '$lib/store.svelte';
 
 	let open = $state(true);
 
-	const swatches = [
-		{ colour: CHOROPLETH_COLOURS.zero, label: 'None' },
-		{ colour: CHOROPLETH_COLOURS.one, label: '1' },
-		{ colour: CHOROPLETH_COLOURS.two, label: '2–3' },
-		{ colour: CHOROPLETH_COLOURS.four, label: '4–5' },
-		{ colour: CHOROPLETH_COLOURS.six, label: '6+' },
+	const allSwatches = [
+		{ colour: CHOROPLETH_COLOURS.zero, label: 'None', min: 0 },
+		{ colour: CHOROPLETH_COLOURS.one, label: '1', min: 1 },
+		{ colour: CHOROPLETH_COLOURS.two, label: '2–3', min: 2 },
+		{ colour: CHOROPLETH_COLOURS.four, label: '4–5', min: 4 },
+		{ colour: CHOROPLETH_COLOURS.six, label: '6+', min: 6 },
 	];
+
+	const maxCount = $derived(Math.max(0, ...store.lsoaCountMap.values()));
+
+	const swatches = $derived(allSwatches.filter((s) => s.min <= maxCount));
 </script>
 
 <div class="absolute top-3 right-3 z-10">
