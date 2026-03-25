@@ -110,6 +110,10 @@
 
 	function applySelectionStates() {
 		if (!map) return;
+		if (!map.isStyleLoaded()) {
+			map.once('idle', () => applySelectionStates());
+			return;
+		}
 		const mode = store.mode;
 		const activeId = mode.type === 'lsoa-selection' ? mode.stakeholderId : null;
 		const activeCodes = activeId
