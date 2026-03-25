@@ -38,13 +38,6 @@
 						</div>
 					{/each}
 				</div>
-
-				<div class="border-t border-slate-100 pt-2 space-y-1.5">
-					<p class="font-serif text-[11px] text-slate-500 italic">Features</p>
-					<div class="flex items-center gap-2">
-						<span class="w-4 h-0.5 bg-[#0077b6] shrink-0"></span>
-						<span class="text-slate-700">River Exe</span>
-					</div>
 				</div>
 			</div>
 		{/if}
