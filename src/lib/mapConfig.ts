@@ -38,8 +38,8 @@ export const LSOA_FILL_PAINT = {
 	]),
 	'fill-opacity': expr<ExpressionSpecification>([
 		'case',
-		['boolean', ['feature-state', 'hovered'], false], 0.85,
-		0.65,
+		['boolean', ['feature-state', 'hovered'], false], 0.75,
+		0.55,
 	]),
 };
 
