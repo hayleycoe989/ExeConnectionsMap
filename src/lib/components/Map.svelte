@@ -39,18 +39,11 @@
 		mapStyle = style;
 	});
 
-	// Cursor + dragPan reflect drawing mode.
-	$effect(() => {
-		if (!map) return;
-		const mode = store.mode;
-		if (mode.type === 'draw') {
-			map.getCanvas().style.cursor = 'crosshair';
-			map.dragPan.disable();
-		} else {
-			map.getCanvas().style.cursor = '';
-			map.dragPan.enable();
-		}
-	});
+	// dragPan stays enabled in every mode — mapbox-gl-draw's own pointer handlers
+	// take precedence over its features (vertices, midpoints, polygon body) while
+	// still letting the user pan between edits. The canvas cursor is left to
+	// mapbox-gl-draw, which sets contextual cursors per mode (crosshair while
+	// drawing, move/grab on vertex handles, etc.).
 
 	// Read-only stakeholder polygon layer source — derived from the store.
 	// Excludes the actively-edited stakeholder (mapbox-gl-draw owns its geometry)

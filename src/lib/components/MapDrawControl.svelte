@@ -103,7 +103,9 @@
 					},
 				],
 			});
-			draw.changeMode('simple_select', { featureIds: [featureId] });
+			// direct_select exposes per-vertex handles + midpoints for adding new
+			// vertices. simple_select would only let the user move the whole polygon.
+			draw.changeMode('direct_select', { featureId });
 		} else {
 			draw.deleteAll();
 			draw.changeMode('draw_polygon');

@@ -8,13 +8,16 @@
 
 	let confirmDelete = $state(false);
 
-	function handleEdit() {
+	function handleEdit(e: MouseEvent) {
+		e.preventDefault();
+		e.stopPropagation();
 		if (!stakeholder) return;
-		store.selectStakeholder(null);
 		store.enterDrawMode(stakeholder.id);
 	}
 
-	function handleDelete() {
+	function handleDelete(e: MouseEvent) {
+		e.preventDefault();
+		e.stopPropagation();
 		if (!stakeholder) return;
 		store.deleteStakeholder(stakeholder.id);
 	}

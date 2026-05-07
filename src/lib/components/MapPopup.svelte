@@ -24,7 +24,7 @@
 	{onclose}
 	{offset}
 	closeButton={false}
-	closeOnClick={true}
+	closeOnClick={false}
 	maxWidth="none"
 	class="z-20 modern-popup"
 >
