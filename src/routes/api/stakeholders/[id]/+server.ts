@@ -1,28 +1,42 @@
 import { json } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import type { Stakeholder } from '$lib/types';
+import type { Polygon } from 'geojson';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const devStore: Map<string, Stakeholder> = (globalThis as any).__riverExeDevStore ??
 	((globalThis as any).__riverExeDevStore = new Map<string, Stakeholder>());
 
+const polygonSchema = z.object({
+	type: z.literal('Polygon'),
+	coordinates: z.array(z.array(z.tuple([z.number(), z.number()]).rest(z.number()))),
+});
+
+const patchBodySchema = z.object({
+	area: polygonSchema.nullable().optional(),
+});
+
 export const PATCH: RequestHandler = async ({ params, request, platform }) => {
 	const { id } = params;
 	const db = platform?.env?.DB;
-	const body = (await request.json()) as { lsoaCodes?: string[] };
+	const raw = await request.json();
+	const parsed = patchBodySchema.safeParse(raw);
+	if (!parsed.success) return json({ error: 'Invalid body' }, { status: 400 });
+	const body = parsed.data;
 
 	if (!db) {
 		const existing = devStore.get(id);
-		if (existing && body.lsoaCodes !== undefined) {
-			devStore.set(id, { ...existing, lsoaCodes: body.lsoaCodes });
+		if (existing && body.area !== undefined) {
+			devStore.set(id, { ...existing, area: (body.area ?? null) as Polygon | null });
 		}
 		return json({ success: true });
 	}
 
-	if (body.lsoaCodes !== undefined) {
+	if (body.area !== undefined) {
 		await db
-			.prepare('UPDATE stakeholders SET lsoa_codes = ? WHERE id = ?')
-			.bind(JSON.stringify(body.lsoaCodes), id)
+			.prepare('UPDATE stakeholders SET area = ? WHERE id = ?')
+			.bind(body.area ? JSON.stringify(body.area) : null, id)
 			.run();
 	}
 

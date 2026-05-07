@@ -17,6 +17,7 @@
 		"@sveltejs/kit": "latest",
 		"@sveltejs/vite-plugin-svelte": "latest",
 		"@tailwindcss/vite": "^4.1.15",
+		"@types/mapbox__mapbox-gl-draw": "^1.4.9",
 		"@types/stream-json": "^1.7.8",
 		"bits-ui": "^2.14.2",
 		"clsx": "^2.1.1",
@@ -33,6 +34,7 @@
 	},
 	"dependencies": {
 		"@lucide/svelte": "^0.544.0",
+		"@mapbox/mapbox-gl-draw": "^1.5.1",
 		"@svelte-maplibre-gl/pmtiles": "latest",
 		"maplibre-gl": "^5.9.0",
 		"svelte-maplibre-gl": "^1.0.1",

@@ -63,7 +63,6 @@
 			return;
 		}
 
-		// Validate URL if provided
 		const linkVal = formData.link.trim();
 		if (linkVal) {
 			try {
@@ -98,25 +97,25 @@
 />
 
 <div
-	class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
+	class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/30 backdrop-blur-sm"
 	role="dialog"
 	aria-modal="true"
 	aria-labelledby="form-title"
 	transition:fade={{ duration: 150 }}
 >
 	<div
-		class="w-full max-w-sm bg-white border border-slate-200 shadow-xl rounded-lg overflow-hidden flex flex-col max-h-[92vh]"
+		class="w-full max-w-sm bg-popover border border-rule shadow-lg rounded-sm overflow-hidden flex flex-col max-h-[92vh]"
 		transition:scale={{ start: 0.97, duration: 150 }}
 	>
 		<!-- Header -->
-		<div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-			<h2 id="form-title" class="font-serif text-base text-slate-800">
+		<div class="flex items-center justify-between px-5 py-4 border-b border-rule">
+			<h2 id="form-title" class="font-serif text-base text-ink">
 				Add stakeholder
 			</h2>
 			<button
 				type="button"
 				onclick={store.closeForm}
-				class="p-1 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+				class="p-1 rounded-sm text-muted-ink hover:text-ink hover:bg-accent transition-colors"
 				aria-label="Close"
 			>
 				<X class="w-4 h-4" />
@@ -133,62 +132,62 @@
 			<!-- Disclaimer -->
 			<div
 				bind:this={disclaimerRef}
-				class="p-3 border border-amber-200 rounded bg-amber-50"
+				class="p-3 border border-destructive/30 rounded-sm bg-destructive/5"
 			>
 				<div class="flex gap-2.5">
-					<TriangleAlert class="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-					<p class="text-xs leading-relaxed text-amber-800">
+					<TriangleAlert class="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
+					<p class="text-xs leading-relaxed text-ink">
 						Data you enter is stored on a University of Exeter server and may be accessed by the
 						research team. Do not enter sensitive personal information.
 					</p>
 				</div>
-				<div class="flex items-center gap-2 mt-3 pt-3 border-t border-amber-200">
+				<div class="flex items-center gap-2 mt-3 pt-3 border-t border-destructive/20">
 					<Checkbox
 						id="disclaimer"
 						bind:checked={disclaimerAccepted}
-						class="border-amber-400 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+						class="border-destructive/50 data-[state=checked]:bg-destructive data-[state=checked]:border-destructive"
 					/>
-					<Label for="disclaimer" class="text-xs text-amber-800 cursor-pointer leading-relaxed">
+					<Label for="disclaimer" class="text-xs text-ink cursor-pointer leading-relaxed">
 						I understand and wish to proceed
 					</Label>
 				</div>
 				{#if errors.disclaimer}
-					<p class="text-[10px] text-red-600 mt-1">{errors.disclaimer}</p>
+					<p class="text-[10px] text-destructive mt-1">{errors.disclaimer}</p>
 				{/if}
 			</div>
 
 			<div class="space-y-1.5">
-				<label for="s-name" class="block font-serif text-xs text-slate-600">Name or organisation</label>
+				<label for="s-name" class="block font-serif text-xs text-muted-ink">Name or organisation</label>
 				<Input
 					id="s-name"
 					type="text"
 					autocomplete="off"
 					bind:value={formData.name}
 					placeholder="e.g. Jane Smith, Devon Wildlife Trust"
-					class={errors.name ? 'border-red-400' : ''}
+					class={errors.name ? 'border-destructive' : ''}
 				/>
 				{#if errors.name}
-					<p class="text-[10px] text-red-600">{errors.name}</p>
+					<p class="text-[10px] text-destructive">{errors.name}</p>
 				{/if}
 			</div>
 
 			<div class="space-y-1.5">
-				<label for="s-role" class="block font-serif text-xs text-slate-600">Role or interest</label>
+				<label for="s-role" class="block font-serif text-xs text-muted-ink">Role or interest</label>
 				<Textarea
 					id="s-role"
 					bind:value={formData.role}
 					rows={2}
 					placeholder="e.g. Environmental officer, local resident, researcher…"
-					class={`resize-none${errors.role ? ' border-red-400' : ''}`}
+					class={`resize-none${errors.role ? ' border-destructive' : ''}`}
 				/>
 				{#if errors.role}
-					<p class="text-[10px] text-red-600">{errors.role}</p>
+					<p class="text-[10px] text-destructive">{errors.role}</p>
 				{/if}
 			</div>
 
 			<div class="space-y-1.5">
-				<label for="s-link" class="block font-serif text-xs text-slate-600">
-					Website <span class="font-sans text-slate-400">(optional)</span>
+				<label for="s-link" class="block font-serif text-xs text-muted-ink">
+					Website <span class="font-sans text-muted-ink/70">(optional)</span>
 				</label>
 				<Input
 					id="s-link"
@@ -196,44 +195,44 @@
 					autocomplete="off"
 					bind:value={formData.link}
 					placeholder="https://example.org"
-					class={errors.link ? 'border-red-400' : ''}
+					class={errors.link ? 'border-destructive' : ''}
 				/>
 				{#if errors.link}
-					<p class="text-[10px] text-red-600">{errors.link}</p>
+					<p class="text-[10px] text-destructive">{errors.link}</p>
 				{/if}
 			</div>
 
 			<!-- Categories -->
 			<div class="space-y-1.5">
-				<p class="font-serif text-xs text-slate-600">Interest categories</p>
+				<p class="font-serif text-xs text-muted-ink">Interest categories</p>
 				<div class="flex flex-wrap gap-1.5">
 					{#each STAKEHOLDER_CATEGORIES as cat}
 						{@const active = selectedCategories.includes(cat)}
 						<button
 							type="button"
 							onclick={() => toggleCategory(cat)}
-							class="px-2.5 py-1 rounded text-[11px] border transition-colors
+							class="px-2.5 py-1 rounded-sm text-[11px] border transition-colors
 							       {active
-								? 'bg-slate-800 text-white border-slate-800'
-								: 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'}"
+								? 'bg-primary text-primary-foreground border-primary'
+								: 'bg-paper text-muted-ink border-rule hover:border-ink/40 hover:text-ink'}"
 						>
 							{cat}
 						</button>
 					{/each}
 				</div>
 				{#if errors.categories}
-					<p class="text-[10px] text-red-600">{errors.categories}</p>
+					<p class="text-[10px] text-destructive">{errors.categories}</p>
 				{/if}
 			</div>
 		</form>
 
 		<!-- Footer -->
-		<div class="flex gap-2 px-5 py-4 border-t border-slate-100">
+		<div class="flex gap-2 px-5 py-4 border-t border-rule">
 			<button
 				type="button"
 				onclick={store.closeForm}
-				class="flex-1 py-2 text-sm font-serif border border-slate-200 rounded text-slate-600
-				       hover:bg-slate-50 transition-colors disabled:opacity-40"
+				class="flex-1 py-2 text-sm font-serif border border-rule rounded-sm text-muted-ink
+				       hover:bg-accent hover:text-ink transition-colors disabled:opacity-40"
 				disabled={isSubmitting}
 			>
 				Cancel
@@ -241,8 +240,8 @@
 			<button
 				type="submit"
 				form="stakeholder-form"
-				class="flex-1 py-2 text-sm font-serif rounded bg-slate-800 text-white
-				       hover:bg-slate-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+				class="flex-1 py-2 text-sm font-serif rounded-sm bg-primary text-primary-foreground
+				       hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center justify-center gap-2"
 				disabled={isSubmitting}
 			>
 				{#if isSubmitting}

@@ -1,3 +1,5 @@
+import type { Polygon } from 'geojson';
+
 export const STAKEHOLDER_CATEGORIES = [
 	'Environmental',
 	'Recreational',
@@ -14,7 +16,7 @@ export interface Stakeholder {
 	role: string;
 	link?: string;
 	categories: StakeholderCategory[];
-	lsoaCodes: string[];
+	area: Polygon | null;
 	createdAt: string;
 }
 
@@ -34,13 +36,12 @@ export interface StakeholderFormErrors {
 	disclaimer?: string;
 }
 
-export interface LsoaClickInfo {
-	lsoaCode: string;
-	lsoaName: string;
+export interface StakeholderClickInfo {
+	stakeholderId: string;
 	lngLat: [number, number];
 }
 
 export type AppMode =
 	| { type: 'idle' }
 	| { type: 'form' }
-	| { type: 'lsoa-selection'; stakeholderId: string };
+	| { type: 'draw'; stakeholderId: string };

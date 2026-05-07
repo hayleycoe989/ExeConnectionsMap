@@ -1,20 +1,11 @@
-import type { AppMode, LsoaClickInfo, Stakeholder, StakeholderFormData } from '$lib/types';
+import type { AppMode, StakeholderClickInfo, Stakeholder, StakeholderFormData } from '$lib/types';
+import type { Polygon } from 'geojson';
 
 function createStore() {
 	let stakeholders = $state<Stakeholder[]>([]);
 	let mode = $state<AppMode>({ type: 'idle' });
-	let selectedLsoa = $state<LsoaClickInfo | null>(null);
+	let selectedStakeholder = $state<StakeholderClickInfo | null>(null);
 	let hiddenCategories = $state(new Set<string>());
-
-	const lsoaCountMap = $derived(
-		stakeholders
-			.filter((s) => !hiddenCategories.has(s.categories[0] ?? 'Uncategorised'))
-			.flatMap((s) => s.lsoaCodes)
-			.reduce((acc, code) => {
-				acc.set(code, (acc.get(code) ?? 0) + 1);
-				return acc;
-			}, new Map<string, number>()),
-	);
 
 	function toggleCategoryVisibility(category: string) {
 		const next = new Set(hiddenCategories);
@@ -40,7 +31,7 @@ function createStore() {
 	}
 
 	function openForm() {
-		selectedLsoa = null;
+		selectedStakeholder = null;
 		mode = { type: 'form' };
 	}
 
@@ -57,7 +48,7 @@ function createStore() {
 			role: data.role.trim(),
 			link: trimmedLink || undefined,
 			categories: data.categories,
-			lsoaCodes: [],
+			area: null,
 			createdAt: new Date().toISOString(),
 		};
 		stakeholders = [...stakeholders, newStakeholder];
@@ -66,58 +57,43 @@ function createStore() {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(newStakeholder),
 		});
-		mode = { type: 'lsoa-selection', stakeholderId: id };
+		mode = { type: 'draw', stakeholderId: id };
 		return id;
 	}
 
-	function enterSelectionMode(stakeholderId: string) {
-		selectedLsoa = null;
-		mode = { type: 'lsoa-selection', stakeholderId };
+	function enterDrawMode(stakeholderId: string) {
+		selectedStakeholder = null;
+		mode = { type: 'draw', stakeholderId };
 	}
 
-	function finishSelectionMode() {
+	function finishDrawMode() {
 		mode = { type: 'idle' };
 	}
 
-	function toggleLsoaAssignment(stakeholderId: string, lsoaCode: string, sync = true) {
-		stakeholders = stakeholders.map((s) => {
-			if (s.id !== stakeholderId) return s;
-			const has = s.lsoaCodes.includes(lsoaCode);
-			return {
-				...s,
-				lsoaCodes: has
-					? s.lsoaCodes.filter((c) => c !== lsoaCode)
-					: [...s.lsoaCodes, lsoaCode],
-			};
-		});
-		if (sync) syncStakeholder(stakeholderId);
-	}
-
-	function syncStakeholder(stakeholderId: string) {
-		const updated = stakeholders.find((s) => s.id === stakeholderId);
-		if (updated) {
-			fetch(`/api/stakeholders/${stakeholderId}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ lsoaCodes: updated.lsoaCodes }),
-			}).catch(() => {});
-		}
-	}
-
-	function isLsoaAssigned(stakeholderId: string, lsoaCode: string): boolean {
-		return stakeholders.find((s) => s.id === stakeholderId)?.lsoaCodes.includes(lsoaCode) ?? false;
+	function setStakeholderArea(stakeholderId: string, area: Polygon | null) {
+		stakeholders = stakeholders.map((s) =>
+			s.id === stakeholderId ? { ...s, area } : s,
+		);
+		fetch(`/api/stakeholders/${stakeholderId}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ area }),
+		}).catch(() => {});
 	}
 
 	function deleteStakeholder(id: string) {
 		stakeholders = stakeholders.filter((s) => s.id !== id);
 		fetch(`/api/stakeholders/${id}`, { method: 'DELETE' }).catch(() => {});
-		if (mode.type === 'lsoa-selection' && mode.stakeholderId === id) {
+		if (mode.type === 'draw' && mode.stakeholderId === id) {
 			mode = { type: 'idle' };
+		}
+		if (selectedStakeholder?.stakeholderId === id) {
+			selectedStakeholder = null;
 		}
 	}
 
-	function selectLsoa(info: LsoaClickInfo | null) {
-		selectedLsoa = info;
+	function selectStakeholder(info: StakeholderClickInfo | null) {
+		selectedStakeholder = info;
 	}
 
 	return {
@@ -128,11 +104,8 @@ function createStore() {
 		get mode() {
 			return mode;
 		},
-		get selectedLsoa() {
-			return selectedLsoa;
-		},
-		get lsoaCountMap() {
-			return lsoaCountMap;
+		get selectedStakeholder() {
+			return selectedStakeholder;
 		},
 		get hiddenCategories() {
 			return hiddenCategories;
@@ -142,13 +115,11 @@ function createStore() {
 		openForm,
 		closeForm,
 		submitStakeholder,
-		enterSelectionMode,
-		finishSelectionMode,
-		toggleLsoaAssignment,
-		syncStakeholder,
-		isLsoaAssigned,
+		enterDrawMode,
+		finishDrawMode,
+		setStakeholderArea,
 		deleteStakeholder,
-		selectLsoa,
+		selectStakeholder,
 	};
 }
 

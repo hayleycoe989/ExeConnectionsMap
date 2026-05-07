@@ -2,12 +2,12 @@
 	import {
 		MapLibre,
 		NavigationControl,
-		VectorTileSource,
+		GeoJSONSource,
 		FillLayer,
 		LineLayer,
 	} from 'svelte-maplibre-gl';
-	import type { Map as MapType, MapMouseEvent, MapLayerMouseEvent, MapSourceDataEvent } from 'maplibre-gl';
-	import type { Stakeholder } from '$lib/types';
+	import type { Map as MapType, MapLayerMouseEvent, StyleSpecification } from 'maplibre-gl';
+	import type { Feature, FeatureCollection, Polygon } from 'geojson';
 	import { PMTilesProtocol } from '@svelte-maplibre-gl/pmtiles';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { onMount, tick } from 'svelte';
@@ -15,238 +15,108 @@
 	import { store } from '$lib/store.svelte';
 	import {
 		MAP_CONFIG,
-		LSOA_URL,
 		BASEMAP_URL,
-		LSOA_FILL_PAINT,
-		LSOA_OUTLINE_PAINT,
+		STAKEHOLDER_FILL_PAINT,
+		STAKEHOLDER_LINE_PAINT,
 	} from '$lib/mapConfig';
 	import MapPopup from './MapPopup.svelte';
-	import LsoaPopup from './LsoaPopup.svelte';
+	import StakeholderPopup from './StakeholderPopup.svelte';
 	import SelectionBanner from './SelectionBanner.svelte';
 	import MapLegend from './MapLegend.svelte';
+	import MapDrawControl from './MapDrawControl.svelte';
 
 	let map = $state<MapType | undefined>();
 	let protocolReady = $state(false);
-	let mapStyle = $state<object | undefined>();
+	let mapStyle = $state<StyleSpecification | undefined>();
 
 	onMount(async () => {
 		await tick();
 		protocolReady = true;
 		const res = await fetch('/style.json');
 		const style = await res.json();
-		// Replace the hardcoded demo-bucket URL with the env-configured basemap URL
+		// Replace the hardcoded demo-bucket URL with the env-configured basemap URL.
 		style.sources.protomaps.url = BASEMAP_URL;
 		mapStyle = style;
 	});
 
-	// Re-apply feature states when stakeholder counts change
-	$effect(() => {
-		if (!map) return;
-		// Read the reactive map to track changes
-		const countMap = store.lsoaCountMap;
-		applyFeatureStates(countMap);
-	});
-
-	// Re-apply after mode changes (entering/leaving selection mode)
+	// Cursor + dragPan reflect drawing mode.
 	$effect(() => {
 		if (!map) return;
 		const mode = store.mode;
-		if (mode.type === 'lsoa-selection') {
+		if (mode.type === 'draw') {
 			map.getCanvas().style.cursor = 'crosshair';
 			map.dragPan.disable();
 		} else {
 			map.getCanvas().style.cursor = '';
 			map.dragPan.enable();
 		}
-		// Re-apply selected states for the active stakeholder
-		applySelectionStates();
 	});
 
-	// Drag-to-select state
-	let isDragging = false;
-	let dragAction: 'add' | 'remove' | null = null;
-	let draggedCodes = new Set<string>();
-
-	$effect(() => {
-		if (!map) return;
-		function onMouseUp() {
-			if (isDragging && store.mode.type === 'lsoa-selection') {
-				store.syncStakeholder(store.mode.stakeholderId);
-			}
-			isDragging = false;
-			dragAction = null;
-		}
-		const canvas = map.getCanvas();
-		canvas.addEventListener('mouseup', onMouseUp);
-		return () => canvas.removeEventListener('mouseup', onMouseUp);
-	});
-
-	let prevCodes = new Set<string>();
-
-	function applyFeatureStates(countMap: Map<string, number>) {
-		if (!map) return;
-		if (!map.isStyleLoaded()) {
-			map.once('idle', () => applyFeatureStates(store.lsoaCountMap));
-			return;
-		}
-		// Zero out codes that are no longer present (e.g. after stakeholder deletion)
-		for (const code of prevCodes) {
-			if (!countMap.has(code)) {
-				map.setFeatureState(
-					{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
-					{ stakeholderCount: 0 },
-				);
-			}
-		}
-		// Apply current counts
-		for (const [code, count] of countMap) {
-			map.setFeatureState(
-				{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
-				{ stakeholderCount: count },
-			);
-		}
-		prevCodes = new Set(countMap.keys());
-	}
-
-	function applySelectionStates() {
-		if (!map) return;
-		if (!map.isStyleLoaded()) {
-			map.once('idle', () => applySelectionStates());
-			return;
-		}
-		const mode = store.mode;
-		const activeId = mode.type === 'lsoa-selection' ? mode.stakeholderId : null;
-		const activeCodes = activeId
-			? (store.stakeholders.find((s: Stakeholder) => s.id === activeId)?.lsoaCodes ?? [])
-			: [];
-
+	// Read-only stakeholder polygon layer source — derived from the store.
+	// Excludes the actively-edited stakeholder (mapbox-gl-draw owns its geometry)
+	// and any stakeholders whose category is hidden.
+	const stakeholderFeatures = $derived.by<FeatureCollection>(() => {
+		const activeId = store.mode.type === 'draw' ? store.mode.stakeholderId : null;
+		const features: Feature[] = [];
 		for (const s of store.stakeholders) {
-			for (const code of s.lsoaCodes) {
-				map.setFeatureState(
-					{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
-					{ selected: activeCodes.includes(code) },
-				);
-			}
+			if (!s.area) continue;
+			if (s.id === activeId) continue;
+			const category = s.categories[0] ?? 'Uncategorised';
+			if (store.hiddenCategories.has(category)) continue;
+			features.push({
+				type: 'Feature',
+				id: s.id,
+				geometry: s.area as Polygon,
+				properties: {
+					id: s.id,
+					name: s.name,
+					category,
+				},
+			});
 		}
-	}
+		return { type: 'FeatureCollection', features };
+	});
 
-	function applyDragToCode(code: string) {
-		if (!map || dragAction === null || draggedCodes.has(code)) return;
-		if (store.mode.type !== 'lsoa-selection') return;
-		draggedCodes.add(code);
-		const isAssigned = store.isLsoaAssigned(store.mode.stakeholderId, code);
-		if ((dragAction === 'add' && !isAssigned) || (dragAction === 'remove' && isAssigned)) {
-			store.toggleLsoaAssignment(store.mode.stakeholderId, code, false);
-		}
-		map.setFeatureState(
-			{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
-			{
-				stakeholderCount: store.lsoaCountMap.get(code) ?? 0,
-				selected: store.isLsoaAssigned(store.mode.stakeholderId, code),
-			},
-		);
-	}
+	let hoveredId = $state<string | null>(null);
 
-	function handleLsoaMouseDown(e: MapLayerMouseEvent) {
-		if (store.mode.type !== 'lsoa-selection') return;
-		const code = (e.features?.[0]?.properties as { LSOA21CD?: string } | undefined)?.LSOA21CD;
-		if (!code) return;
-		isDragging = true;
-		draggedCodes = new Set();
-		dragAction = store.isLsoaAssigned(store.mode.stakeholderId, code) ? 'remove' : 'add';
-		applyDragToCode(code);
-	}
-
-	function handleLsoaClick(e: MapLayerMouseEvent) {
-		if (!map) return;
-
-		const props = e.features?.[0]?.properties as { LSOA21CD?: string; LSOA21NM?: string } | undefined;
-		const lsoaCode = props?.LSOA21CD ?? '';
-		const lsoaName = props?.LSOA21NM ?? lsoaCode;
-
-		if (!lsoaCode) return;
-
-		if (store.mode.type === 'lsoa-selection') {
-			// mousedown already handled this code; skip to avoid double-toggle
-			if (!draggedCodes.has(lsoaCode)) {
-				store.toggleLsoaAssignment(store.mode.stakeholderId, lsoaCode);
-				map.setFeatureState(
-					{ source: 'lsoa-source', sourceLayer: 'lsoa', id: lsoaCode },
-					{
-						stakeholderCount: store.lsoaCountMap.get(lsoaCode) ?? 0,
-						selected: store.isLsoaAssigned(store.mode.stakeholderId, lsoaCode),
-					},
-				);
-			}
-			draggedCodes = new Set();
-		} else {
-			store.selectLsoa({ lsoaCode, lsoaName, lngLat: [e.lngLat.lng, e.lngLat.lat] });
-		}
-
+	function handlePolygonClick(e: MapLayerMouseEvent) {
+		if (store.mode.type !== 'idle') return;
+		const props = e.features?.[0]?.properties as { id?: string } | undefined;
+		const id = props?.id;
+		if (!id) return;
+		store.selectStakeholder({ stakeholderId: id, lngLat: [e.lngLat.lng, e.lngLat.lat] });
 		e.originalEvent.stopPropagation();
 	}
 
-	function handleMapClick() {
-		if (store.mode.type === 'idle') {
-			store.selectLsoa(null);
+	function handlePolygonEnter(e: MapLayerMouseEvent) {
+		if (!map) return;
+		if (store.mode.type === 'draw') return;
+		const id = (e.features?.[0]?.properties as { id?: string } | undefined)?.id;
+		if (!id) return;
+		if (hoveredId && hoveredId !== id) {
+			map.setFeatureState({ source: 'stakeholders', id: hoveredId }, { hovered: false });
 		}
+		hoveredId = id;
+		map.setFeatureState({ source: 'stakeholders', id }, { hovered: true });
+		map.getCanvas().style.cursor = 'pointer';
 	}
 
-	function handleCursorEnter() {
-		if (map && store.mode.type !== 'lsoa-selection') {
-			map.getCanvas().style.cursor = 'pointer';
+	function handlePolygonLeave() {
+		if (!map) return;
+		if (hoveredId) {
+			map.setFeatureState({ source: 'stakeholders', id: hoveredId }, { hovered: false });
+			hoveredId = null;
 		}
-	}
-
-	function handleCursorLeave() {
-		if (map && store.mode.type !== 'lsoa-selection') {
+		if (store.mode.type !== 'draw') {
 			map.getCanvas().style.cursor = '';
 		}
 	}
 
-	let hoveredLsoaId = $state<string | null>(null);
-
-	function handleLsoaMouseEnter(e: MapLayerMouseEvent) {
-		if (!map) return;
-		const code = (e.features?.[0]?.properties as { LSOA21CD?: string } | undefined)?.LSOA21CD;
-		if (!code) return;
-		if (hoveredLsoaId && hoveredLsoaId !== code) {
-			map.setFeatureState(
-				{ source: 'lsoa-source', sourceLayer: 'lsoa', id: hoveredLsoaId },
-				{ hovered: false },
-			);
+	function handleMapClick() {
+		if (store.mode.type === 'idle') {
+			store.selectStakeholder(null);
 		}
-		hoveredLsoaId = code;
-		map.setFeatureState(
-			{ source: 'lsoa-source', sourceLayer: 'lsoa', id: code },
-			{ hovered: true },
-		);
-		handleCursorEnter();
-		if (isDragging) applyDragToCode(code);
 	}
-
-	function handleLsoaMouseLeave() {
-		if (!map || !hoveredLsoaId) return;
-		map.setFeatureState(
-			{ source: 'lsoa-source', sourceLayer: 'lsoa', id: hoveredLsoaId },
-			{ hovered: false },
-		);
-		hoveredLsoaId = null;
-		handleCursorLeave();
-	}
-
-	// Re-apply feature states after tiles load
-	$effect(() => {
-		if (!map) return;
-		function onSourceData(e: MapSourceDataEvent) {
-			if (e.sourceId === 'lsoa-source' && e.isSourceLoaded) {
-				applyFeatureStates(store.lsoaCountMap);
-				applySelectionStates();
-			}
-		}
-		map.on('sourcedata', onSourceData);
-		return () => map?.off('sourcedata', onSourceData);
-	});
 </script>
 
 {#if browser}
@@ -271,46 +141,38 @@
 				<SelectionBanner />
 				<MapLegend />
 
-				<!-- LSOA choropleth — inserted below label layers -->
-				<VectorTileSource
-					id="lsoa-source"
-					url={LSOA_URL}
-					promoteId={{ lsoa: 'LSOA21CD' }}
-				>
+				{#if map}
+					<MapDrawControl {map} />
+				{/if}
+
+				<!-- Stakeholder polygon overlays (read-only). -->
+				<GeoJSONSource id="stakeholders" data={stakeholderFeatures} promoteId="id">
 					<FillLayer
-						id="lsoa-fill"
-						sourceLayer="lsoa"
-						beforeId="address_label"
-						paint={LSOA_FILL_PAINT}
-						onmousedown={handleLsoaMouseDown}
-						onclick={handleLsoaClick}
-						onmousemove={handleLsoaMouseEnter}
-						onmouseleave={handleLsoaMouseLeave}
+						id="stakeholders-fill"
+						paint={STAKEHOLDER_FILL_PAINT}
+						onclick={handlePolygonClick}
+						onmousemove={handlePolygonEnter}
+						onmouseleave={handlePolygonLeave}
 					/>
-					<LineLayer
-						id="lsoa-outline"
-						sourceLayer="lsoa"
-						beforeId="address_label"
-						paint={LSOA_OUTLINE_PAINT}
-					/>
-				</VectorTileSource>
+					<LineLayer id="stakeholders-line" paint={STAKEHOLDER_LINE_PAINT} />
+				</GeoJSONSource>
 
 				<!-- Attribution -->
 				<div
-					class="absolute bottom-1 left-1 z-10 text-[9px] text-slate-600 bg-white/90
+					class="absolute bottom-1 left-1 z-10 text-[9px] text-muted-ink bg-paper/85
 					       px-1.5 py-0.5 rounded pointer-events-none"
 				>
-					© <a href="https://openstreetmap.org" class="pointer-events-auto underline-offset-1 hover:underline text-slate-700" target="_blank" rel="noopener">OpenStreetMap</a>
-					· <a href="https://protomaps.com" class="pointer-events-auto underline-offset-1 hover:underline text-slate-700" target="_blank" rel="noopener">Protomaps</a>
+					© <a href="https://openstreetmap.org" class="pointer-events-auto underline-offset-1 hover:underline" target="_blank" rel="noopener">OpenStreetMap</a>
+					· <a href="https://protomaps.com" class="pointer-events-auto underline-offset-1 hover:underline" target="_blank" rel="noopener">Protomaps</a>
 					· ONS Open Geography
 				</div>
 
-				{#if store.selectedLsoa && store.mode.type === 'idle'}
+				{#if store.selectedStakeholder && store.mode.type === 'idle'}
 					<MapPopup
-						lnglat={store.selectedLsoa.lngLat}
-						onclose={() => store.selectLsoa(null)}
-						component={LsoaPopup}
-						props={{ info: store.selectedLsoa }}
+						lnglat={store.selectedStakeholder.lngLat}
+						onclose={() => store.selectStakeholder(null)}
+						component={StakeholderPopup}
+						props={{ stakeholderId: store.selectedStakeholder.stakeholderId }}
 					/>
 				{/if}
 			</MapLibre>

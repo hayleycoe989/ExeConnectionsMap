@@ -1,7 +1,7 @@
 import type { ExpressionSpecification } from 'maplibre-gl';
-import { PUBLIC_LSOA_TILES_URL, PUBLIC_BASEMAP_URL } from '$env/static/public';
+import { PUBLIC_BASEMAP_URL } from '$env/static/public';
+import type { StakeholderCategory } from '$lib/types';
 
-export const LSOA_URL = `pmtiles://${PUBLIC_LSOA_TILES_URL}`;
 export const BASEMAP_URL = `pmtiles://${PUBLIC_BASEMAP_URL}`;
 
 export const MAP_CONFIG = {
@@ -15,50 +15,45 @@ export const MAP_CONFIG = {
 	maxTileCacheSize: 150,
 };
 
-// Sequential blue choropleth scale (0 → 6+ stakeholders)
-export const CHOROPLETH_COLOURS = {
-	zero: '#f0f7ff',
-	one: '#bdd7ee',
-	two: '#6baed6',
-	four: '#2171b5',
-	six: '#084594',
-} as const;
+// Hex literals matching the OKLCH category tokens defined in src/app.css.
+// MapLibre paint specs can't reference CSS custom properties, so we maintain
+// these as static colours that mirror the design tokens.
+export const CATEGORY_COLOURS: Record<StakeholderCategory, string> = {
+	Environmental: '#3a7a52',
+	Recreational: '#9c5b2c',
+	Educational: '#3d5a8a',
+	Commercial: '#7a4a78',
+	Political: '#8c4848',
+};
 
 const expr = <T>(v: unknown) => v as unknown as T;
 
-export const LSOA_FILL_PAINT = {
-	'fill-color': expr<ExpressionSpecification>([
-		'step',
-		['coalesce', ['feature-state', 'stakeholderCount'], 0],
-		CHOROPLETH_COLOURS.zero,
-		1, CHOROPLETH_COLOURS.one,
-		2, CHOROPLETH_COLOURS.two,
-		4, CHOROPLETH_COLOURS.four,
-		6, CHOROPLETH_COLOURS.six,
-	]),
+const categoryMatch = (alpha: number) => [
+	'match',
+	['get', 'category'],
+	'Environmental', `${CATEGORY_COLOURS.Environmental}`,
+	'Recreational', `${CATEGORY_COLOURS.Recreational}`,
+	'Educational', `${CATEGORY_COLOURS.Educational}`,
+	'Commercial', `${CATEGORY_COLOURS.Commercial}`,
+	'Political', `${CATEGORY_COLOURS.Political}`,
+	'#1f2330', // fallback ink
+] as const;
+
+export const STAKEHOLDER_FILL_PAINT = {
+	'fill-color': expr<ExpressionSpecification>(categoryMatch(0)),
 	'fill-opacity': expr<ExpressionSpecification>([
 		'case',
-		['boolean', ['feature-state', 'hovered'], false], 0.75,
-		0.55,
+		['boolean', ['feature-state', 'hovered'], false], 0.32,
+		0.18,
 	]),
 };
 
-export const LSOA_OUTLINE_PAINT = {
-	'line-color': '#94a3b8',
+export const STAKEHOLDER_LINE_PAINT = {
+	'line-color': expr<ExpressionSpecification>(categoryMatch(0)),
 	'line-width': expr<ExpressionSpecification>([
-		'interpolate', ['linear'], ['zoom'],
-		8, 0.3,
-		12, 0.8,
-	]),
-	'line-opacity': 0.5 as number,
-};
-
-export const RIVER_LINE_PAINT = {
-	'line-color': '#0077b6',
-	'line-width': expr<ExpressionSpecification>([
-		'interpolate', ['linear'], ['zoom'],
-		9, 1.5,
-		13, 3,
+		'case',
+		['boolean', ['feature-state', 'hovered'], false], 2,
+		1.25,
 	]),
 	'line-opacity': 0.85 as number,
 };

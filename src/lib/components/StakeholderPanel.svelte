@@ -5,7 +5,7 @@
 	import type { Stakeholder } from '$lib/types';
 	import StakeholderCard from './StakeholderCard.svelte';
 
-	// Group stakeholders by primary category
+	// Group stakeholders by primary category.
 	const grouped = $derived.by(() => {
 		const groups = new Map<string, Stakeholder[]>();
 		for (const s of store.stakeholders) {
@@ -20,7 +20,6 @@
 		});
 	});
 
-	// Categories that have been manually closed (all open by default)
 	let closedCategories = $state(new Set<string>());
 
 	function toggleCategorySection(cat: string) {
@@ -35,49 +34,47 @@
 </script>
 
 <aside
-	class="flex flex-col w-72 shrink-0 h-full border-r bg-sidebar overflow-hidden"
+	class="flex flex-col w-72 shrink-0 h-full border-r border-sidebar-border bg-sidebar overflow-hidden"
 	aria-label="Stakeholder panel"
 >
 	<!-- Header -->
-	<div class="px-5 pt-6 pb-4 bg-sidebar text-sidebar-foreground">
-		<h1 class="font-serif text-xl leading-snug text-sidebar-foreground">
+	<div class="px-6 pt-7 pb-5 text-sidebar-foreground">
+		<h1 class="font-serif text-2xl leading-tight tracking-tight text-sidebar-foreground">
 			River Exe<br />Stakeholder Map
 		</h1>
-		<p class="mt-1 text-[11px] tracking-wide text-sidebar-foreground/70 uppercase">
-			University of Exeter
-		</p>
-		<p class="mt-3 text-xs leading-relaxed text-sidebar-foreground/75">
-			Register stakeholders and select the LSOAs that fall within their area of interest.
+		<div class="mt-3 h-px w-10 bg-sidebar-foreground/30"></div>
+		<p class="mt-4 text-xs leading-relaxed text-sidebar-foreground/75 font-serif italic">
+			Register stakeholders and draw the area of the river system that falls within their interest.
 		</p>
 	</div>
 
-	<div class="px-5 pb-4 bg-sidebar">
+	<div class="px-6 pb-5">
 		<button
 			type="button"
 			onclick={store.openForm}
 			disabled={store.mode.type === 'form'}
 			class="w-full flex items-center justify-center gap-2 py-2 text-sm font-serif
-			       border border-sidebar-border text-sidebar-foreground
+			       border border-sidebar-border text-sidebar-foreground rounded-sm
 			       hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
-			       disabled:opacity-40 disabled:cursor-not-allowed transition-colors rounded"
+			       disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
 		>
 			<UserPlus class="w-3.5 h-3.5" />
 			Add stakeholder
 		</button>
 	</div>
 
-	<div class="h-px bg-sidebar-border mx-5"></div>
+	<div class="h-px bg-sidebar-border mx-6"></div>
 
 	<!-- Stakeholder list -->
 	<div class="flex-1 min-h-0">
 		<ScrollArea class="h-full">
 			<div class="px-5 py-4">
 				{#if store.stakeholders.length === 0}
-					<p class="font-serif italic text-sm text-sidebar-foreground/70 pt-2">
+					<p class="font-serif italic text-sm text-sidebar-foreground/65 pt-2 px-1">
 						No stakeholders added yet.
 					</p>
 				{:else}
-					<p class="text-[10px] uppercase tracking-widest text-sidebar-foreground/65 pb-3">
+					<p class="text-[10px] uppercase tracking-[0.18em] text-sidebar-foreground/65 pb-3 px-1">
 						{store.stakeholders.length} {store.stakeholders.length === 1 ? 'stakeholder' : 'stakeholders'}
 					</p>
 
@@ -98,7 +95,7 @@
 									{:else}
 										<ChevronRight class="w-3 h-3 text-sidebar-foreground/45 shrink-0" />
 									{/if}
-									<span class="text-[10px] uppercase tracking-widest transition-colors
+									<span class="text-[10px] uppercase tracking-[0.18em] transition-colors
 									             {isHidden ? 'text-sidebar-foreground/30 line-through' : 'text-sidebar-foreground/65 group-hover:text-sidebar-foreground/85'}">
 										{category}
 										<span class="ml-1 {isHidden ? 'text-sidebar-foreground/25' : 'text-sidebar-foreground/45'}">({stakeholders.length})</span>
@@ -107,7 +104,7 @@
 								<button
 									type="button"
 									onclick={() => store.toggleCategoryVisibility(category)}
-									class="p-1 rounded transition-colors shrink-0
+									class="p-1 rounded-sm transition-colors shrink-0
 									       {isHidden
 										? 'text-sidebar-foreground/30 hover:text-sidebar-foreground/60'
 										: 'text-sidebar-foreground/45 hover:text-sidebar-foreground/75'}"
@@ -135,5 +132,4 @@
 			</div>
 		</ScrollArea>
 	</div>
-
 </aside>

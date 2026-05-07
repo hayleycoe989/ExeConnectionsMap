@@ -6,7 +6,7 @@
 	let { stakeholder }: { stakeholder: Stakeholder } = $props();
 
 	const isActive = $derived(
-		store.mode.type === 'lsoa-selection' && store.mode.stakeholderId === stakeholder.id,
+		store.mode.type === 'draw' && store.mode.stakeholderId === stakeholder.id,
 	);
 
 	let expanded = $state(false);
@@ -15,7 +15,7 @@
 
 <div
 	class="border-l-2 transition-all duration-150
-	       {isActive ? 'border-emerald-400' : 'border-transparent hover:border-sidebar-border'}"
+	       {isActive ? 'border-sidebar-primary' : 'border-transparent hover:border-sidebar-border'}"
 >
 	<!-- Always-visible row: name + chevron + actions -->
 	<div class="flex items-center justify-between gap-1 min-w-0 pl-3 py-2">
@@ -38,13 +38,13 @@
 		<div class="flex items-center gap-0.5 shrink-0">
 			<button
 				type="button"
-				onclick={() => isActive ? store.finishSelectionMode() : store.enterSelectionMode(stakeholder.id)}
-				class="p-1.5 rounded transition-colors
+				onclick={() => isActive ? store.finishDrawMode() : store.enterDrawMode(stakeholder.id)}
+				class="p-1.5 rounded-sm transition-colors
 				       {isActive
-					? 'text-emerald-400 hover:text-emerald-300 hover:bg-sidebar-accent'
+					? 'text-sidebar-primary hover:opacity-80 hover:bg-sidebar-accent'
 					: 'text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent'}"
-				aria-label={isActive ? 'Finish selecting areas' : 'Edit areas'}
-				title={isActive ? 'Done' : 'Edit areas'}
+				aria-label={isActive ? 'Finish editing area' : 'Edit area'}
+				title={isActive ? 'Done' : 'Edit area'}
 			>
 				<Pencil class="w-3 h-3" />
 			</button>
@@ -53,14 +53,14 @@
 				<button
 					type="button"
 					onclick={() => { store.deleteStakeholder(stakeholder.id); confirmDelete = false; }}
-					class="px-2 py-1 rounded text-[10px] bg-red-900/50 text-red-300 hover:bg-red-900/70 transition-colors"
+					class="px-2 py-1 rounded-sm text-[10px] bg-destructive/20 text-destructive-foreground hover:bg-destructive/30 transition-colors"
 				>
 					Delete
 				</button>
 				<button
 					type="button"
 					onclick={() => (confirmDelete = false)}
-					class="px-2 py-1 rounded text-[10px] text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+					class="px-2 py-1 rounded-sm text-[10px] text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
 				>
 					Cancel
 				</button>
@@ -68,7 +68,7 @@
 				<button
 					type="button"
 					onclick={() => (confirmDelete = true)}
-					class="p-1.5 rounded text-sidebar-foreground/50 hover:text-red-400 hover:bg-sidebar-accent transition-colors"
+					class="p-1.5 rounded-sm text-sidebar-foreground/50 hover:text-destructive hover:bg-sidebar-accent transition-colors"
 					aria-label="Delete stakeholder"
 				>
 					<Trash2 class="w-3 h-3" />
@@ -88,8 +88,8 @@
 					{stakeholder.categories.join(' · ')}
 				</p>
 			{/if}
-			<p class="text-[10px] text-sidebar-foreground/60">
-				{stakeholder.lsoaCodes.length} {stakeholder.lsoaCodes.length === 1 ? 'area' : 'areas'} selected
+			<p class="text-[10px] text-sidebar-foreground/60 italic">
+				{stakeholder.area ? 'Area drawn' : 'No area drawn'}
 			</p>
 			{#if stakeholder.link}
 				<a

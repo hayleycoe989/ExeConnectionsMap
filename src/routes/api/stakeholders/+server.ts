@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Stakeholder, StakeholderCategory } from '$lib/types';
+import type { Polygon } from 'geojson';
 
 interface StakeholderRow {
 	id: string;
@@ -8,7 +9,7 @@ interface StakeholderRow {
 	role: string;
 	link: string | null;
 	categories: string;
-	lsoa_codes: string;
+	area: string | null;
 	created_at: string;
 }
 
@@ -19,7 +20,7 @@ function rowToStakeholder(row: StakeholderRow): Stakeholder {
 		role: row.role,
 		link: row.link ?? undefined,
 		categories: JSON.parse(row.categories) as StakeholderCategory[],
-		lsoaCodes: JSON.parse(row.lsoa_codes) as string[],
+		area: row.area ? (JSON.parse(row.area) as Polygon) : null,
 		createdAt: row.created_at,
 	};
 }
@@ -50,7 +51,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 	await db
 		.prepare(
-			'INSERT INTO stakeholders (id, name, role, link, categories, lsoa_codes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO stakeholders (id, name, role, link, categories, area, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
 		)
 		.bind(
 			stakeholder.id,
@@ -58,7 +59,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			stakeholder.role,
 			stakeholder.link ?? null,
 			JSON.stringify(stakeholder.categories),
-			JSON.stringify(stakeholder.lsoaCodes),
+			stakeholder.area ? JSON.stringify(stakeholder.area) : null,
 			stakeholder.createdAt,
 		)
 		.run();
