@@ -120,4 +120,52 @@
 	:global(.maplibregl-ctrl-group:has(.mapbox-gl-draw_ctrl-draw-btn)) {
 		display: none;
 	}
+
+	/* mapbox-gl-draw applies mouse-/mode-/feature- classes to the map container,
+	   but its bundled CSS only targets .mapboxgl-* selectors. Mirror the
+	   contextual cursors against MapLibre's class names. */
+	:global(.maplibregl-map.mouse-pointer .maplibregl-canvas-container.maplibregl-interactive) {
+		cursor: pointer;
+	}
+	:global(.maplibregl-map.mouse-add .maplibregl-canvas-container.maplibregl-interactive) {
+		cursor: crosshair;
+	}
+	:global(.maplibregl-map.mouse-move .maplibregl-canvas-container.maplibregl-interactive) {
+		cursor: move;
+	}
+	:global(
+		.maplibregl-map.mode-direct_select.mouse-move
+			.maplibregl-canvas-container.maplibregl-interactive
+	) {
+		cursor: grab;
+	}
+	/* Hovering a vertex while in direct_select — the resize / move arrows. */
+	:global(
+		.maplibregl-map.mode-direct_select.feature-vertex.mouse-move
+			.maplibregl-canvas-container.maplibregl-interactive
+	) {
+		cursor: move;
+	}
+	/* Hovering a midpoint — clicking it inserts a new vertex. */
+	:global(
+		.maplibregl-map.mode-direct_select.feature-midpoint.mouse-pointer
+			.maplibregl-canvas-container.maplibregl-interactive
+	) {
+		cursor: cell;
+	}
+	/* Hovering the polygon body in direct_select — drag to translate the whole
+	   shape. */
+	:global(
+		.maplibregl-map.mode-direct_select.feature-feature.mouse-move
+			.maplibregl-canvas-container.maplibregl-interactive
+	) {
+		cursor: move;
+	}
+	/* simple_select — hovering the polygon body, ready to grab. */
+	:global(
+		.maplibregl-map.mode-simple_select.feature-feature.mouse-move
+			.maplibregl-canvas-container.maplibregl-interactive
+	) {
+		cursor: move;
+	}
 </style>
