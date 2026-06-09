@@ -23,12 +23,12 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let draw: any;
 
-	function activeStakeholderId(): string | null {
-		return store.mode.type === 'draw' ? store.mode.stakeholderId : null;
+	function activeConnectionId(): string | null {
+		return store.mode.type === 'draw' ? store.mode.connectionId : null;
 	}
 
 	function onCreate(e: { features: Feature[] }) {
-		const id = activeStakeholderId();
+		const id = activeConnectionId();
 		if (!id) return;
 		const polygon = e.features[0]?.geometry as Polygon | undefined;
 		if (!polygon || polygon.type !== 'Polygon') return;
@@ -43,21 +43,21 @@
 			}
 		}
 
-		store.setStakeholderArea(id, polygon);
+		store.setConnectionArea(id, polygon);
 	}
 
 	function onUpdate(e: { features: Feature[] }) {
-		const id = activeStakeholderId();
+		const id = activeConnectionId();
 		if (!id) return;
 		const polygon = e.features[0]?.geometry as Polygon | undefined;
 		if (!polygon || polygon.type !== 'Polygon') return;
-		store.setStakeholderArea(id, polygon);
+		store.setConnectionArea(id, polygon);
 	}
 
 	function onDelete() {
-		const id = activeStakeholderId();
+		const id = activeConnectionId();
 		if (!id) return;
-		store.setStakeholderArea(id, null);
+		store.setConnectionArea(id, null);
 	}
 
 	onMount(() => {
@@ -87,18 +87,18 @@
 			draw.changeMode('simple_select');
 			return;
 		}
-		const stakeholder = store.stakeholders.find((s) => s.id === mode.stakeholderId);
-		if (!stakeholder) return;
+		const connection = store.connections.find((s) => s.id === mode.connectionId);
+		if (!connection) return;
 
-		if (stakeholder.area) {
-			const featureId = `area-${stakeholder.id}`;
+		if (connection.area) {
+			const featureId = `area-${connection.id}`;
 			draw.set({
 				type: 'FeatureCollection',
 				features: [
 					{
 						id: featureId,
 						type: 'Feature',
-						geometry: stakeholder.area,
+						geometry: connection.area,
 						properties: {},
 					},
 				],

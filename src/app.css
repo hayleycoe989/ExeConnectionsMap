@@ -21,8 +21,8 @@
     --card-foreground: var(--ink);
     --popover: var(--paper);
     --popover-foreground: var(--ink);
-    --primary: oklch(0.28 0.03 240);
-    --primary-foreground: oklch(0.98 0.003 240);
+    --primary: oklch(0.34 0.13 255);
+    --primary-foreground: oklch(0.99 0.01 250);
     --secondary: oklch(0.94 0.005 240);
     --secondary-foreground: var(--ink);
     --muted: oklch(0.94 0.005 240);
@@ -50,14 +50,12 @@
     --cat-recreational: oklch(0.55 0.12 60);
     --cat-educational: oklch(0.50 0.10 260);
     --cat-commercial: oklch(0.50 0.10 320);
-    --cat-political: oklch(0.50 0.13 20);
 
     /* Charts inherit the category palette. */
     --chart-1: var(--cat-environmental);
     --chart-2: var(--cat-recreational);
     --chart-3: var(--cat-educational);
     --chart-4: var(--cat-commercial);
-    --chart-5: var(--cat-political);
 }
 
 .dark {
@@ -126,7 +124,6 @@
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
     --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
 
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
@@ -148,9 +145,13 @@
     --color-cat-recreational: var(--cat-recreational);
     --color-cat-educational: var(--cat-educational);
     --color-cat-commercial: var(--cat-commercial);
-    --color-cat-political: var(--cat-political);
 
-    --font-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+    /* Single system-UI font used throughout (serif retired per request); both
+       `font-sans` and the legacy `font-serif` utility resolve to this stack. */
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --font-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 @layer base {
@@ -163,7 +164,9 @@
         font-family:
             -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
             Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-        touch-action: none;
+        /* Prevent pull-to-refresh / overscroll bounce without blocking touch
+           scrolling inside the panel and modal (touch-action: none would). */
+        overscroll-behavior: none;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;

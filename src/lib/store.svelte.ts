@@ -1,10 +1,10 @@
-import type { AppMode, StakeholderClickInfo, Stakeholder, StakeholderFormData } from '$lib/types';
+import type { AppMode, ConnectionClickInfo, Connection, ConnectionFormData } from '$lib/types';
 import type { Polygon } from 'geojson';
 
 function createStore() {
-	let stakeholders = $state<Stakeholder[]>([]);
+	let connections = $state<Connection[]>([]);
 	let mode = $state<AppMode>({ type: 'idle' });
-	let selectedStakeholder = $state<StakeholderClickInfo | null>(null);
+	let selectedConnection = $state<ConnectionClickInfo | null>(null);
 	let hiddenCategories = $state(new Set<string>());
 
 	function toggleCategoryVisibility(category: string) {
@@ -17,21 +17,21 @@ function createStore() {
 		hiddenCategories = next;
 	}
 
-	function init(initial: Stakeholder[]) {
-		stakeholders = initial;
+	function init(initial: Connection[]) {
+		connections = Array.isArray(initial) ? initial : [];
 	}
 
 	async function loadFromServer() {
 		try {
-			const res = await fetch('/api/stakeholders');
-			if (res.ok) stakeholders = (await res.json()) as Stakeholder[];
+			const res = await fetch('/api/connections');
+			if (res.ok) connections = (await res.json()) as Connection[];
 		} catch {
 			// Silently start with empty list
 		}
 	}
 
 	function openForm() {
-		selectedStakeholder = null;
+		selectedConnection = null;
 		mode = { type: 'form' };
 	}
 
@@ -39,10 +39,10 @@ function createStore() {
 		mode = { type: 'idle' };
 	}
 
-	async function submitStakeholder(data: StakeholderFormData): Promise<string> {
+	async function submitConnection(data: ConnectionFormData): Promise<string> {
 		const id = crypto.randomUUID();
 		const trimmedLink = data.link.trim();
-		const newStakeholder: Stakeholder = {
+		const newConnection: Connection = {
 			id,
 			name: data.name.trim(),
 			role: data.role.trim(),
@@ -51,61 +51,61 @@ function createStore() {
 			area: null,
 			createdAt: new Date().toISOString(),
 		};
-		stakeholders = [...stakeholders, newStakeholder];
-		await fetch('/api/stakeholders', {
+		connections = [...connections, newConnection];
+		await fetch('/api/connections', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(newStakeholder),
+			body: JSON.stringify(newConnection),
 		});
-		mode = { type: 'draw', stakeholderId: id };
+		mode = { type: 'draw', connectionId: id };
 		return id;
 	}
 
-	function enterDrawMode(stakeholderId: string) {
-		selectedStakeholder = null;
-		mode = { type: 'draw', stakeholderId };
+	function enterDrawMode(connectionId: string) {
+		selectedConnection = null;
+		mode = { type: 'draw', connectionId };
 	}
 
 	function finishDrawMode() {
 		mode = { type: 'idle' };
 	}
 
-	function setStakeholderArea(stakeholderId: string, area: Polygon | null) {
-		stakeholders = stakeholders.map((s) =>
-			s.id === stakeholderId ? { ...s, area } : s,
+	function setConnectionArea(connectionId: string, area: Polygon | null) {
+		connections = connections.map((s) =>
+			s.id === connectionId ? { ...s, area } : s,
 		);
-		fetch(`/api/stakeholders/${stakeholderId}`, {
+		fetch(`/api/connections/${connectionId}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ area }),
 		}).catch(() => {});
 	}
 
-	function deleteStakeholder(id: string) {
-		stakeholders = stakeholders.filter((s) => s.id !== id);
-		fetch(`/api/stakeholders/${id}`, { method: 'DELETE' }).catch(() => {});
-		if (mode.type === 'draw' && mode.stakeholderId === id) {
+	function deleteConnection(id: string) {
+		connections = connections.filter((s) => s.id !== id);
+		fetch(`/api/connections/${id}`, { method: 'DELETE' }).catch(() => {});
+		if (mode.type === 'draw' && mode.connectionId === id) {
 			mode = { type: 'idle' };
 		}
-		if (selectedStakeholder?.stakeholderId === id) {
-			selectedStakeholder = null;
+		if (selectedConnection?.connectionId === id) {
+			selectedConnection = null;
 		}
 	}
 
-	function selectStakeholder(info: StakeholderClickInfo | null) {
-		selectedStakeholder = info;
+	function selectConnection(info: ConnectionClickInfo | null) {
+		selectedConnection = info;
 	}
 
 	return {
-		get stakeholders() {
-			return stakeholders;
+		get connections() {
+			return connections;
 		},
 		init,
 		get mode() {
 			return mode;
 		},
-		get selectedStakeholder() {
-			return selectedStakeholder;
+		get selectedConnection() {
+			return selectedConnection;
 		},
 		get hiddenCategories() {
 			return hiddenCategories;
@@ -114,12 +114,12 @@ function createStore() {
 		toggleCategoryVisibility,
 		openForm,
 		closeForm,
-		submitStakeholder,
+		submitConnection,
 		enterDrawMode,
 		finishDrawMode,
-		setStakeholderArea,
-		deleteStakeholder,
-		selectStakeholder,
+		setConnectionArea,
+		deleteConnection,
+		selectConnection,
 	};
 }
 

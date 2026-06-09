@@ -16,14 +16,14 @@
 	import {
 		MAP_CONFIG,
 		BASEMAP_URL,
-		STAKEHOLDER_FILL_PAINT,
-		STAKEHOLDER_LINE_PAINT,
+		CONNECTION_FILL_PAINT,
+		CONNECTION_LINE_PAINT,
 	} from '$lib/mapConfig';
+	import type { Component } from 'svelte';
 	import MapPopup from './MapPopup.svelte';
-	import StakeholderPopup from './StakeholderPopup.svelte';
+	import ConnectionPopup from './ConnectionPopup.svelte';
 	import SelectionBanner from './SelectionBanner.svelte';
 	import MapLegend from './MapLegend.svelte';
-	import MapDrawControl from './MapDrawControl.svelte';
 
 	let map = $state<MapType | undefined>();
 	let protocolReady = $state(false);
@@ -39,19 +39,43 @@
 		mapStyle = style;
 	});
 
+	// Defer @mapbox/mapbox-gl-draw — it's only needed while editing an area, so it
+	// stays out of the initial map chunk. Loaded on first draw, and prefetched on
+	// idle once the map is ready so the first edit has no perceptible delay.
+	let DrawControl = $state<Component<{ map: MapType }> | null>(null);
+	let drawRequested = false;
+	function loadDrawControl() {
+		if (DrawControl || drawRequested) return;
+		drawRequested = true;
+		import('./MapDrawControl.svelte').then((m) => (DrawControl = m.default));
+	}
+	$effect(() => {
+		if (store.mode.type === 'draw') loadDrawControl();
+	});
+	$effect(() => {
+		if (!map) return;
+		const w = window as unknown as {
+			requestIdleCallback?: (cb: () => void) => number;
+			cancelIdleCallback?: (id: number) => void;
+		};
+		const schedule = w.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1200));
+		const id = schedule(loadDrawControl);
+		return () => (w.cancelIdleCallback ? w.cancelIdleCallback(id) : clearTimeout(id));
+	});
+
 	// dragPan stays enabled in every mode — mapbox-gl-draw's own pointer handlers
 	// take precedence over its features (vertices, midpoints, polygon body) while
 	// still letting the user pan between edits. The canvas cursor is left to
 	// mapbox-gl-draw, which sets contextual cursors per mode (crosshair while
 	// drawing, move/grab on vertex handles, etc.).
 
-	// Read-only stakeholder polygon layer source — derived from the store.
-	// Excludes the actively-edited stakeholder (mapbox-gl-draw owns its geometry)
-	// and any stakeholders whose category is hidden.
-	const stakeholderFeatures = $derived.by<FeatureCollection>(() => {
-		const activeId = store.mode.type === 'draw' ? store.mode.stakeholderId : null;
+	// Read-only connection polygon layer source — derived from the store.
+	// Excludes the actively-edited connection (mapbox-gl-draw owns its geometry)
+	// and any connections whose category is hidden.
+	const connectionFeatures = $derived.by<FeatureCollection>(() => {
+		const activeId = store.mode.type === 'draw' ? store.mode.connectionId : null;
 		const features: Feature[] = [];
-		for (const s of store.stakeholders) {
+		for (const s of store.connections) {
 			if (!s.area) continue;
 			if (s.id === activeId) continue;
 			const category = s.categories[0] ?? 'Uncategorised';
@@ -77,7 +101,7 @@
 		const props = e.features?.[0]?.properties as { id?: string } | undefined;
 		const id = props?.id;
 		if (!id) return;
-		store.selectStakeholder({ stakeholderId: id, lngLat: [e.lngLat.lng, e.lngLat.lat] });
+		store.selectConnection({ connectionId: id, lngLat: [e.lngLat.lng, e.lngLat.lat] });
 		e.originalEvent.stopPropagation();
 	}
 
@@ -87,17 +111,17 @@
 		const id = (e.features?.[0]?.properties as { id?: string } | undefined)?.id;
 		if (!id) return;
 		if (hoveredId && hoveredId !== id) {
-			map.setFeatureState({ source: 'stakeholders', id: hoveredId }, { hovered: false });
+			map.setFeatureState({ source: 'connections', id: hoveredId }, { hovered: false });
 		}
 		hoveredId = id;
-		map.setFeatureState({ source: 'stakeholders', id }, { hovered: true });
+		map.setFeatureState({ source: 'connections', id }, { hovered: true });
 		map.getCanvas().style.cursor = 'pointer';
 	}
 
 	function handlePolygonLeave() {
 		if (!map) return;
 		if (hoveredId) {
-			map.setFeatureState({ source: 'stakeholders', id: hoveredId }, { hovered: false });
+			map.setFeatureState({ source: 'connections', id: hoveredId }, { hovered: false });
 			hoveredId = null;
 		}
 		if (store.mode.type !== 'draw') {
@@ -107,7 +131,7 @@
 
 	function handleMapClick() {
 		if (store.mode.type === 'idle') {
-			store.selectStakeholder(null);
+			store.selectConnection(null);
 		}
 	}
 </script>
@@ -134,38 +158,39 @@
 				<SelectionBanner />
 				<MapLegend />
 
-				{#if map}
-					<MapDrawControl {map} />
+				{#if map && DrawControl}
+					{@const DC = DrawControl}
+					<DC {map} />
 				{/if}
 
-				<!-- Stakeholder polygon overlays (read-only). -->
-				<GeoJSONSource id="stakeholders" data={stakeholderFeatures} promoteId="id">
+				<!-- Connection polygon overlays (read-only). -->
+				<GeoJSONSource id="connections" data={connectionFeatures} promoteId="id">
 					<FillLayer
-						id="stakeholders-fill"
-						paint={STAKEHOLDER_FILL_PAINT}
+						id="connections-fill"
+						paint={CONNECTION_FILL_PAINT}
 						onclick={handlePolygonClick}
 						onmousemove={handlePolygonEnter}
 						onmouseleave={handlePolygonLeave}
 					/>
-					<LineLayer id="stakeholders-line" paint={STAKEHOLDER_LINE_PAINT} />
+					<LineLayer id="connections-line" paint={CONNECTION_LINE_PAINT} />
 				</GeoJSONSource>
 
 				<!-- Attribution -->
 				<div
-					class="absolute bottom-1 left-1 z-10 text-[9px] text-muted-ink bg-paper/85
-					       px-1.5 py-0.5 rounded pointer-events-none"
+					class="absolute bottom-1 left-1 z-10 text-[9px] text-muted-ink bg-paper/90 border border-rule
+					       px-1.5 py-0.5 rounded-sm pointer-events-none"
 				>
 					© <a href="https://openstreetmap.org" class="pointer-events-auto underline-offset-1 hover:underline" target="_blank" rel="noopener">OpenStreetMap</a>
 					· <a href="https://protomaps.com" class="pointer-events-auto underline-offset-1 hover:underline" target="_blank" rel="noopener">Protomaps</a>
 					· ONS Open Geography
 				</div>
 
-				{#if store.selectedStakeholder && store.mode.type === 'idle'}
+				{#if store.selectedConnection && store.mode.type === 'idle'}
 					<MapPopup
-						lnglat={store.selectedStakeholder.lngLat}
-						onclose={() => store.selectStakeholder(null)}
-						component={StakeholderPopup}
-						props={{ stakeholderId: store.selectedStakeholder.stakeholderId }}
+						lnglat={store.selectedConnection.lngLat}
+						onclose={() => store.selectConnection(null)}
+						component={ConnectionPopup}
+						props={{ connectionId: store.selectedConnection.connectionId }}
 					/>
 				{/if}
 			</MapLibre>

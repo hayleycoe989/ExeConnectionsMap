@@ -6,10 +6,10 @@
 </script>
 
 <svelte:head>
-	<title>River Exe Stakeholder Map</title>
+	<title>Exe Connections Map — University of Exeter</title>
 	<meta
 		name="description"
-		content="Stakeholder mapping tool for the River Exe catchment — University of Exeter"
+		content="Exe Connections Map — map the people, groups and organisations connected to the River Exe catchment — University of Exeter"
 	/>
 </svelte:head>
 

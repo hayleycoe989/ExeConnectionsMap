@@ -2,58 +2,59 @@
 	import { X, Pencil, Trash2 } from '@lucide/svelte';
 	import { store } from '$lib/store.svelte';
 
-	let { stakeholderId }: { stakeholderId: string } = $props();
+	let { connectionId }: { connectionId: string } = $props();
 
-	const stakeholder = $derived(store.stakeholders.find((s) => s.id === stakeholderId));
+	const connection = $derived(store.connections.find((s) => s.id === connectionId));
 
 	let confirmDelete = $state(false);
 
 	function handleEdit(e: MouseEvent) {
 		e.preventDefault();
 		e.stopPropagation();
-		if (!stakeholder) return;
-		store.enterDrawMode(stakeholder.id);
+		if (!connection) return;
+		store.enterDrawMode(connection.id);
 	}
 
 	function handleDelete(e: MouseEvent) {
 		e.preventDefault();
 		e.stopPropagation();
-		if (!stakeholder) return;
-		store.deleteStakeholder(stakeholder.id);
+		if (!connection) return;
+		store.deleteConnection(connection.id);
 	}
 </script>
 
-{#if stakeholder}
+{#if connection}
 	<div class="bg-paper border border-rule rounded-sm shadow-sm w-60 text-xs overflow-hidden">
 		<div class="px-3.5 py-3">
 			<div class="flex items-start justify-between gap-2 mb-2">
 				<div class="min-w-0 flex-1">
-					{#if stakeholder.link}
+					{#if connection.link}
 						<a
-							href={stakeholder.link}
+							href={connection.link}
 							target="_blank"
 							rel="noopener"
 							class="font-serif text-sm text-ink hover:underline underline-offset-2 block truncate"
-						>{stakeholder.name}</a>
+						>{connection.name}</a>
 					{:else}
-						<p class="font-serif text-sm text-ink leading-snug truncate">{stakeholder.name}</p>
+						<p class="font-serif text-sm text-ink leading-snug truncate">{connection.name}</p>
 					{/if}
 				</div>
 				<button
 					type="button"
-					onclick={() => store.selectStakeholder(null)}
-					class="p-0.5 text-muted-ink hover:text-ink transition-colors shrink-0"
+					onclick={() => store.selectConnection(null)}
+					class="p-0.5 rounded-sm text-muted-ink hover:text-ink transition-colors shrink-0
+					       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 					aria-label="Close"
 				>
 					<X class="w-3.5 h-3.5" />
 				</button>
 			</div>
 
-			<p class="font-serif text-[11px] text-muted-ink leading-relaxed mb-2">{stakeholder.role}</p>
+			<p class="font-serif text-[11px] text-muted-ink leading-relaxed mb-2">{connection.role}</p>
 
-			{#if stakeholder.categories.length > 0}
+			{#if connection.categories.length > 0}
 				<p class="text-[10px] uppercase tracking-widest text-muted-ink mb-2.5">
-					{stakeholder.categories.join(' · ')}
+					{connection.categories.join(' · ')}
 				</p>
 			{/if}
 
@@ -62,7 +63,8 @@
 					type="button"
 					onclick={handleEdit}
 					class="flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] text-ink
-					       hover:bg-accent transition-colors"
+					       hover:bg-accent transition-colors
+					       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 				>
 					<Pencil class="w-3 h-3" />
 					Edit area
@@ -72,14 +74,16 @@
 						<button
 							type="button"
 							onclick={handleDelete}
-							class="px-2 py-1 rounded-sm text-[10px] text-destructive border border-destructive/40 hover:bg-destructive/10 transition-colors"
+							class="px-2 py-1 rounded-sm text-[10px] text-destructive border border-destructive/40 hover:bg-destructive/10 transition-colors
+							       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						>
 							Delete
 						</button>
 						<button
 							type="button"
 							onclick={() => (confirmDelete = false)}
-							class="px-2 py-1 rounded-sm text-[10px] text-muted-ink hover:text-ink transition-colors"
+							class="px-2 py-1 rounded-sm text-[10px] text-muted-ink hover:text-ink transition-colors
+							       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						>
 							Cancel
 						</button>
@@ -88,8 +92,9 @@
 					<button
 						type="button"
 						onclick={() => (confirmDelete = true)}
-						class="ml-auto p-1 rounded-sm text-muted-ink hover:text-destructive transition-colors"
-						aria-label="Delete stakeholder"
+						class="ml-auto p-1 rounded-sm text-muted-ink hover:text-destructive transition-colors
+						       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+						aria-label="Delete connection"
 					>
 						<Trash2 class="w-3 h-3" />
 					</button>

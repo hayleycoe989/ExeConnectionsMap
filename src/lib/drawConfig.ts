@@ -5,7 +5,7 @@
 // active = the feature currently being drawn or edited
 // inactive = features sitting in the draw control's read-only buffer
 // We don't render inactive features in the draw layer — the read-only
-// stakeholder GeoJSON layer does that — so inactive styles are deliberately
+// connection GeoJSON layer does that — so inactive styles are deliberately
 // transparent.
 
 const PRIMARY_INK = '#1f2330';
@@ -15,7 +15,7 @@ const VERTEX_BORDER = '#1f2330';
 const MIDPOINT_FILL = '#9aa0ad';
 
 export const MAPBOX_DRAW_STYLES = [
-	// Inactive features — invisible (rendered by stakeholder layer instead).
+	// Inactive features — invisible (rendered by connection layer instead).
 	{
 		id: 'gl-draw-polygon-fill-inactive',
 		type: 'fill',

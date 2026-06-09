@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import type { Stakeholder } from '$lib/types';
+import type { Connection } from '$lib/types';
 import type { Polygon } from 'geojson';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const devStore: Map<string, Stakeholder> = (globalThis as any).__riverExeDevStore ??
-	((globalThis as any).__riverExeDevStore = new Map<string, Stakeholder>());
+const devStore: Map<string, Connection> = (globalThis as any).__riverExeDevStore ??
+	((globalThis as any).__riverExeDevStore = new Map<string, Connection>());
 
 const polygonSchema = z.object({
 	type: z.literal('Polygon'),
@@ -35,7 +35,7 @@ export const PATCH: RequestHandler = async ({ params, request, platform }) => {
 
 	if (body.area !== undefined) {
 		await db
-			.prepare('UPDATE stakeholders SET area = ? WHERE id = ?')
+			.prepare('UPDATE connections SET area = ? WHERE id = ?')
 			.bind(body.area ? JSON.stringify(body.area) : null, id)
 			.run();
 	}
@@ -52,6 +52,6 @@ export const DELETE: RequestHandler = async ({ params, platform }) => {
 		return json({ success: true });
 	}
 
-	await db.prepare('DELETE FROM stakeholders WHERE id = ?').bind(id).run();
+	await db.prepare('DELETE FROM connections WHERE id = ?').bind(id).run();
 	return json({ success: true });
 };

@@ -1,34 +1,33 @@
 import type { Polygon } from 'geojson';
 
-export const STAKEHOLDER_CATEGORIES = [
+export const CONNECTION_CATEGORIES = [
 	'Environmental',
 	'Recreational',
 	'Educational',
 	'Commercial',
-	'Political',
 ] as const;
 
-export type StakeholderCategory = (typeof STAKEHOLDER_CATEGORIES)[number];
+export type ConnectionCategory = (typeof CONNECTION_CATEGORIES)[number];
 
-export interface Stakeholder {
+export interface Connection {
 	id: string;
 	name: string;
 	role: string;
 	link?: string;
-	categories: StakeholderCategory[];
+	categories: ConnectionCategory[];
 	area: Polygon | null;
 	createdAt: string;
 }
 
-export interface StakeholderFormData {
+export interface ConnectionFormData {
 	name: string;
 	role: string;
 	link: string;
-	categories: StakeholderCategory[];
+	categories: ConnectionCategory[];
 	disclaimerAccepted: boolean;
 }
 
-export interface StakeholderFormErrors {
+export interface ConnectionFormErrors {
 	name?: string;
 	role?: string;
 	link?: string;
@@ -36,12 +35,12 @@ export interface StakeholderFormErrors {
 	disclaimer?: string;
 }
 
-export interface StakeholderClickInfo {
-	stakeholderId: string;
+export interface ConnectionClickInfo {
+	connectionId: string;
 	lngLat: [number, number];
 }
 
 export type AppMode =
 	| { type: 'idle' }
 	| { type: 'form' }
-	| { type: 'draw'; stakeholderId: string };
+	| { type: 'draw'; connectionId: string };
