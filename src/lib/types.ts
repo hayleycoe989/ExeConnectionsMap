@@ -5,6 +5,7 @@ export const CONNECTION_CATEGORIES = [
 	'Recreational',
 	'Educational',
 	'Commercial',
+	'Habitat',
 ] as const;
 
 export type ConnectionCategory = (typeof CONNECTION_CATEGORIES)[number];

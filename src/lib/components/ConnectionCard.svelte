@@ -17,7 +17,6 @@
 	class="border-l-2 transition-all duration-150
 	       {isActive ? 'border-primary' : 'border-transparent hover:border-rule'}"
 >
-	<!-- Always-visible row: name + chevron + actions -->
 	<div class="flex items-center justify-between gap-1 min-w-0 pl-3 py-2">
 		<button
 			type="button"
@@ -83,7 +82,6 @@
 		</div>
 	</div>
 
-	<!-- Expanded details -->
 	{#if expanded}
 		<div class="pl-7 pr-2 pb-2.5 space-y-0.5">
 			<p class="font-serif text-[11px] text-muted-ink leading-snug">

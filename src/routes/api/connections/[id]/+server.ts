@@ -4,7 +4,6 @@ import type { RequestHandler } from './$types';
 import type { Connection } from '$lib/types';
 import type { Polygon } from 'geojson';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const devStore: Map<string, Connection> = (globalThis as any).__riverExeDevStore ??
 	((globalThis as any).__riverExeDevStore = new Map<string, Connection>());
 

@@ -9,13 +9,10 @@
 
 	let closeButton = $state<HTMLButtonElement | undefined>();
 
-	// When the mobile drawer opens, move focus to its close button. On desktop the
-	// button is display:none (md:hidden), so this is a harmless no-op there.
 	$effect(() => {
 		if (open) closeButton?.focus();
 	});
 
-	// Group connections by primary category.
 	const grouped = $derived.by(() => {
 		const groups = new Map<string, Connection[]>();
 		for (const s of store.connections) {
@@ -57,9 +54,7 @@
 	       md:static md:translate-x-0 md:w-72 md:shrink-0 md:z-auto md:shadow-none"
 	aria-label="Exe Connections Map panel"
 >
-	<!-- ===== Masthead — project wordmark ===== -->
 	<header class="relative shrink-0 px-6 py-3.5 border-b border-rule">
-		<!-- sr-only heading keeps the page semantically labelled; the wordmark is the visible title. -->
 		<h1 class="sr-only">Exe Connections Map</h1>
 		<a
 			href="/"
@@ -86,7 +81,6 @@
 		</button>
 	</header>
 
-	<!-- ===== Primary action ===== -->
 	<div class="shrink-0 px-6 pt-4 pb-3">
 		<button
 			type="button"
@@ -105,7 +99,6 @@
 
 	<div class="h-px bg-rule mx-6"></div>
 
-	<!-- ===== Connection list — scrollable (takes all remaining height) ===== -->
 	<div class="flex-1 min-h-0">
 		<ScrollArea class="h-full">
 			<div class="px-5 py-4">
@@ -122,7 +115,6 @@
 						{@const isOpen = !closedCategories.has(category)}
 						{@const isHidden = store.hiddenCategories.has(category)}
 						<div class="mb-3">
-							<!-- Category section header -->
 							<div class="flex items-center gap-1 py-1">
 								<button
 									type="button"
@@ -175,7 +167,6 @@
 		</ScrollArea>
 	</div>
 
-	<!-- ===== Partner footer — credits ===== -->
 	<footer class="shrink-0 px-6 py-3 border-t border-rule">
 		<p class="text-[10px] uppercase tracking-[0.18em] text-muted-ink mb-2">With support from</p>
 		<ul class="grid grid-cols-3 gap-1.5">

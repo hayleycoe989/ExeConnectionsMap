@@ -25,8 +25,6 @@ function rowToConnection(row: ConnectionRow): Connection {
 	};
 }
 
-// In-memory fallback for local dev (no D1 binding outside Cloudflare)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const devStore: Map<string, Connection> = (globalThis as any).__riverExeDevStore ??
 	((globalThis as any).__riverExeDevStore = new Map<string, Connection>());
 

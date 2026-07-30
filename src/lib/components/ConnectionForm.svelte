@@ -48,8 +48,6 @@
         }
     }
 
-    // Accessible modal: focus the first field on open, keep Tab within the dialog,
-    // and return focus to whatever opened it (the "Add a connection" button) on close.
     function trapFocus(node: HTMLElement) {
         const selector =
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -161,7 +159,6 @@
         class="w-full max-w-sm bg-popover border border-rule shadow-lg rounded-sm overflow-hidden flex flex-col max-h-[92vh]"
         transition:scale={{ start: 0.97, duration: 150 }}
     >
-        <!-- Header -->
         <div
             class="flex items-center justify-between px-5 py-4 border-b border-rule"
         >
@@ -179,14 +176,12 @@
             </button>
         </div>
 
-        <!-- Body -->
         <form
             id="connection-form"
             onsubmit={handleSubmit}
             class="flex-1 overflow-y-auto px-5 py-5 space-y-4"
             novalidate
         >
-            <!-- Disclaimer -->
             <div
                 bind:this={disclaimerRef}
                 class="p-3 border border-destructive/30 rounded-sm bg-destructive/5"
@@ -282,7 +277,6 @@
                 {/if}
             </div>
 
-            <!-- Categories -->
             <div class="space-y-1.5">
                 <p class="font-serif text-xs text-muted-ink">
                     Interest categories
@@ -312,7 +306,6 @@
             </div>
         </form>
 
-        <!-- Footer -->
         <div class="flex gap-2 px-5 py-4 border-t border-rule">
             <button
                 type="button"

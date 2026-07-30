@@ -4,9 +4,6 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-	// enhancedImages() must precede sveltekit() so it can rewrite <enhanced:img>
-	// tags before SvelteKit processes them. It generates avif/webp + intrinsic
-	// dimensions for the partner logos at build time.
 	plugins: [tailwindcss(), enhancedImages(), sveltekit()],
 	server: {
 		watch: {

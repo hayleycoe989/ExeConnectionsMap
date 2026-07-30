@@ -1,13 +1,3 @@
-// Style array for @mapbox/mapbox-gl-draw, tuned to the editorial palette.
-// MapLibre paint specs can't reference CSS custom properties, so colours are
-// hex literals chosen to match the OKLCH tokens in src/app.css.
-//
-// active = the feature currently being drawn or edited
-// inactive = features sitting in the draw control's read-only buffer
-// We don't render inactive features in the draw layer — the read-only
-// connection GeoJSON layer does that — so inactive styles are deliberately
-// transparent.
-
 const PRIMARY_INK = '#1f2330';
 const PRIMARY_INK_FILL = '#1f2330';
 const VERTEX_FILL = '#fafbfc';
@@ -15,7 +5,6 @@ const VERTEX_BORDER = '#1f2330';
 const MIDPOINT_FILL = '#9aa0ad';
 
 export const MAPBOX_DRAW_STYLES = [
-	// Inactive features — invisible (rendered by connection layer instead).
 	{
 		id: 'gl-draw-polygon-fill-inactive',
 		type: 'fill',
@@ -38,7 +27,6 @@ export const MAPBOX_DRAW_STYLES = [
 		],
 		paint: { 'line-color': '#000', 'line-width': 0 },
 	},
-	// Active polygon (being drawn or selected) — fill.
 	{
 		id: 'gl-draw-polygon-fill-active',
 		type: 'fill',
@@ -48,7 +36,6 @@ export const MAPBOX_DRAW_STYLES = [
 			'fill-opacity': 0.12,
 		},
 	},
-	// Active polygon outline.
 	{
 		id: 'gl-draw-polygon-stroke-active',
 		type: 'line',
@@ -60,7 +47,6 @@ export const MAPBOX_DRAW_STYLES = [
 			'line-width': 1.5,
 		},
 	},
-	// LineString for the in-progress polygon (before close).
 	{
 		id: 'gl-draw-line-active',
 		type: 'line',
@@ -72,7 +58,6 @@ export const MAPBOX_DRAW_STYLES = [
 			'line-width': 1.5,
 		},
 	},
-	// Vertex point halos (white outline around each vertex).
 	{
 		id: 'gl-draw-polygon-and-line-vertex-stroke-inactive',
 		type: 'circle',
@@ -82,7 +67,6 @@ export const MAPBOX_DRAW_STYLES = [
 			'circle-color': VERTEX_BORDER,
 		},
 	},
-	// Vertex points themselves.
 	{
 		id: 'gl-draw-polygon-and-line-vertex-inactive',
 		type: 'circle',
@@ -92,7 +76,6 @@ export const MAPBOX_DRAW_STYLES = [
 			'circle-color': VERTEX_FILL,
 		},
 	},
-	// Midpoints — for adding new vertices between existing ones.
 	{
 		id: 'gl-draw-polygon-midpoint',
 		type: 'circle',

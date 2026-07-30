@@ -6,6 +6,9 @@ function createStore() {
 	let mode = $state<AppMode>({ type: 'idle' });
 	let selectedConnection = $state<ConnectionClickInfo | null>(null);
 	let hiddenCategories = $state(new Set<string>());
+	let hiddenLayers = $state(new Set<string>());
+	let popup = $state<any | null>(null);
+
 
 	function toggleCategoryVisibility(category: string) {
 		const next = new Set(hiddenCategories);
@@ -17,6 +20,16 @@ function createStore() {
 		hiddenCategories = next;
 	}
 
+	function toggleLayerVisibility(layer: string) {
+		const next = new Set(hiddenLayers);
+		if (next.has(layer)) {
+			next.delete(layer);
+		} else {
+			next.add(layer);
+		}
+		hiddenLayers = next;
+	}
+
 	function init(initial: Connection[]) {
 		connections = Array.isArray(initial) ? initial : [];
 	}
@@ -25,9 +38,7 @@ function createStore() {
 		try {
 			const res = await fetch('/api/connections');
 			if (res.ok) connections = (await res.json()) as Connection[];
-		} catch {
-			// Silently start with empty list
-		}
+		} catch {}
 	}
 
 	function openForm() {
@@ -96,31 +107,45 @@ function createStore() {
 		selectedConnection = info;
 	}
 
+	function setPopup(info: any | null) {
+  		popup = info;
+	}
+
 	return {
-		get connections() {
-			return connections;
-		},
-		init,
-		get mode() {
-			return mode;
-		},
-		get selectedConnection() {
-			return selectedConnection;
-		},
-		get hiddenCategories() {
-			return hiddenCategories;
-		},
-		loadFromServer,
-		toggleCategoryVisibility,
-		openForm,
-		closeForm,
-		submitConnection,
-		enterDrawMode,
-		finishDrawMode,
-		setConnectionArea,
-		deleteConnection,
-		selectConnection,
-	};
+    get popup() {
+        return popup;
+    },
+    setPopup,
+    get connections() {
+        return connections;
+    },
+    init,
+    get mode() {
+        return mode;
+    },
+    get selectedConnection() {
+        return selectedConnection;
+    },
+    get hiddenCategories() {
+        return hiddenCategories;
+    },
+    get hiddenLayers() {
+        return hiddenLayers;
+    },
+
+    loadFromServer,
+    toggleCategoryVisibility,
+    toggleLayerVisibility,
+    openForm,
+    closeForm,
+    submitConnection,
+    enterDrawMode,
+    finishDrawMode,
+    setConnectionArea,
+    deleteConnection,
+    selectConnection
+};
+
 }
 
 export const store = createStore();

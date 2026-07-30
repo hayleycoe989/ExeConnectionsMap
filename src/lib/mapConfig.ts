@@ -1,8 +1,5 @@
 import type { ExpressionSpecification } from 'maplibre-gl';
-import { PUBLIC_BASEMAP_URL } from '$env/static/public';
 import type { ConnectionCategory } from '$lib/types';
-
-export const BASEMAP_URL = `pmtiles://${PUBLIC_BASEMAP_URL}`;
 
 export const MAP_CONFIG = {
 	center: [-3.42, 50.62] as [number, number],
@@ -15,15 +12,45 @@ export const MAP_CONFIG = {
 	maxTileCacheSize: 150,
 };
 
-// Hex literals matching the OKLCH category tokens defined in src/app.css.
-// MapLibre paint specs can't reference CSS custom properties, so we maintain
-// these as static colours that mirror the design tokens.
 export const CATEGORY_COLOURS: Record<ConnectionCategory, string> = {
 	Environmental: '#3a7a52',
 	Recreational: '#9c5b2c',
 	Educational: '#3d5a8a',
 	Commercial: '#7a4a78',
+	Habitat: '#a2a457'
 };
+
+export const CATEGORY_LAYERS: Partial<
+	Record<ConnectionCategory, { id: string; label: string }[]>
+> = {
+	Environmental: [
+		{id: 'lsoa', label: 'LSOA boundaries' },
+		{id: `Exe_Bedrock`, label: `Bedrock Geology` },
+		{id: 'Exe_Rivers', label: 'The River Exe' },
+		{id: 'Exe_Boarders', label: 'Exe Catchment Boarders' },
+		{id: 'Flood_Risk', label: 'Flood Risk'},
+		{id: 'Wetland', label: 'Wetlands'}
+	],
+    Recreational: [
+        { id: 'CountryParks', label: 'Country Parks', },
+    ],
+	Educational: [
+		{id: 'WMS', label: 'Water Monitoring Sites' },
+	],	
+	Habitat: [
+		{id: 'ExeRF', label: 'Temperate Rainforests'},
+		{id: 'SalMig', label: 'Salmon Migration'},
+		{id: 'TempRF', label: 'Possible Temperate Rainforests'},
+	]
+};
+
+export const MAP_LAYER_GROUPS = [
+	{
+		id: 'hydrology',
+		label: 'Hydrology',
+		layers: [{ id: 'river', label: 'River Exe' }],
+	},
+] as const;
 
 const expr = <T>(v: unknown) => v as unknown as T;
 
@@ -34,7 +61,8 @@ const categoryMatch = (alpha: number) => [
 	'Recreational', `${CATEGORY_COLOURS.Recreational}`,
 	'Educational', `${CATEGORY_COLOURS.Educational}`,
 	'Commercial', `${CATEGORY_COLOURS.Commercial}`,
-	'#1f2330', // fallback ink
+	'Habitat', `${CATEGORY_COLOURS.Habitat}`,
+	'#1f2330',
 ] as const;
 
 export const CONNECTION_FILL_PAINT = {

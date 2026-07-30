@@ -5,17 +5,17 @@
 		GeoJSONSource,
 		FillLayer,
 		LineLayer,
+		CircleLayer,
 	} from 'svelte-maplibre-gl';
 	import type { Map as MapType, MapLayerMouseEvent, StyleSpecification } from 'maplibre-gl';
 	import type { Feature, FeatureCollection, Polygon } from 'geojson';
-	import { PMTilesProtocol } from '@svelte-maplibre-gl/pmtiles';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { store } from '$lib/store.svelte';
 	import {
 		MAP_CONFIG,
-		BASEMAP_URL,
+		CATEGORY_COLOURS,
 		CONNECTION_FILL_PAINT,
 		CONNECTION_LINE_PAINT,
 	} from '$lib/mapConfig';
@@ -25,23 +25,135 @@
 	import SelectionBanner from './SelectionBanner.svelte';
 	import MapLegend from './MapLegend.svelte';
 
-	let map = $state<MapType | undefined>();
-	let protocolReady = $state(false);
+let mapComponent = $state<any>(null);
+let map = $state<MapType | null>(null);
+
+
+
+
+
+	function handleLayerClick(type: string) {
+  		return (e: MapLayerMouseEvent) => {
+			const feature = e.features?.[0];
+			if (!feature) return;
+		
+		console.log("=== POPUP DIAGNOSTICS ===");
+		console.log("Layer key:", type);
+		console.log("Clicked feature:", feature);
+		console.log("Feature properties:", feature?.properties);
+		console.log("Popup type that will be set:", type);
+		console.log("==========================");
+
+
+    	store.setPopup({
+    	  type,
+    	  lngLat: [e.lngLat.lng, e.lngLat.lat],
+    	  props: feature.properties
+    	});
+  		};
+	}
+
+
+	import RiverExePopup from './RiverExePopup.svelte';
+	import LsoaExePopup from './LsoaExePopup.svelte';
+	import CountryParksPopup from './CountryParksPopup.svelte';
+	import BedrockPopup from './BedrockPopup.svelte';
+	import WmsPopup from './WmsPopup.svelte';
+	import ExeRiversPopup from './ExeRiversPopup.svelte';
+	import ExeBoardersPopup from './ExeBoardersPopup.svelte';
+	import FloodRiskPopup from './FloodRiskPopup.svelte';
+	import WetlandPopup from './WetlandPopup.svelte';
+	import ExeRainforestPopup from './ExeRainforestPopup.svelte';
+	import SalmonMigrationPopup from './SalmonMigrationPopup.svelte';
+	import TemperateRainforestPopup from './TemperateRainforestPopup.svelte';
+
+	const POPUP_COMPONENTS: Record<string, any> = {
+	riverexe: RiverExePopup,
+	lsoaexe: LsoaExePopup,
+	countryparks: CountryParksPopup,
+	bedrock: BedrockPopup,
+	wms: WmsPopup,
+	exerivers: ExeRiversPopup,
+	exeboarders: ExeBoardersPopup,
+	floodrisk: FloodRiskPopup,
+	wetland: WetlandPopup,
+	exerainforest: ExeRainforestPopup,
+	salmonmigration: SalmonMigrationPopup,
+	temperaterainforest: TemperateRainforestPopup
+	};
+
+
+	
 	let mapStyle = $state<StyleSpecification | undefined>();
+	let riverData = $state<FeatureCollection | null>(null);
+	let lsoaData = $state<FeatureCollection | null>(null);
+	let countryParksData = $state<FeatureCollection | null>(null);
+	let bedrockData = $state<FeatureCollection | null>(null);
+	let wmsData = $state<FeatureCollection | null>(null);
+	let riverexeData = $state<FeatureCollection | null>(null);
+	let boardersData = $state<FeatureCollection | null>(null);
+	let floodriskData = $state<FeatureCollection | null>(null);
+	let wetlandData = $state<FeatureCollection | null>(null);
+	let exerfData = $state<FeatureCollection | null>(null);
+	let salmigData = $state<FeatureCollection |null>(null);
+	let temprfData = $state<FeatureCollection |null>(null);
+
 
 	onMount(async () => {
-		await tick();
-		protocolReady = true;
-		const res = await fetch('/style.json');
+		const res = await fetch('/basemap-style.json');
 		const style = await res.json();
-		// Replace the hardcoded demo-bucket URL with the env-configured basemap URL.
-		style.sources.protomaps.url = BASEMAP_URL;
 		mapStyle = style;
+		const [
+ 	 		riverResponse,
+  			lsoaResponse,
+			countryParksResponse,
+			bedrockResponse,
+			wmsResponse,
+			riverexeResponse,
+			boardersResponse,
+			floodriskResponse,
+			wetlandResponse,
+			exerfResponse,
+			salmigResponse,
+			temprfResponse,
+		] = await Promise.all([
+			fetch('/river-exe.geojson'),
+			fetch('/lsoa-exe.geojson'),
+			fetch('/CountryParks.geojson'),
+			fetch('/Exe_Bedrock.geojson'),
+			fetch('/Exe_WMS.geojson'),
+			fetch('/Exe_Rivers.geojson'),
+  			fetch('/Exe_Boarders.geojson'),
+			fetch('/Flood_Risk.geojson'),
+			fetch('/Wetland.geojson'),
+			fetch('/Exe_Rainforest.geojson'),
+			fetch('/Salmon_Migration.geojson'),
+			fetch('/Tempurate_Rainforest.geojson'),
+
+
+
+		]);
+
+		if (riverResponse.ok) riverData = await riverResponse.json();
+		if (lsoaResponse.ok) lsoaData = await lsoaResponse.json();
+		if (countryParksResponse.ok) countryParksData = await countryParksResponse.json();
+		if (bedrockResponse.ok) bedrockData = await bedrockResponse.json();
+		if (wmsResponse.ok) wmsData = await wmsResponse.json();
+		if (riverexeResponse.ok) riverexeData = await riverexeResponse.json();
+		if (boardersResponse.ok) boardersData = await boardersResponse.json();
+		if (floodriskResponse.ok) floodriskData = await floodriskResponse.json();
+		if (wetlandResponse.ok) wetlandData = await wetlandResponse.json();
+		if (exerfResponse.ok) exerfData = await exerfResponse.json();
+		if (salmigResponse.ok) salmigData = await salmigResponse.json();
+		if (temprfResponse.ok) temprfData = await temprfResponse.json();
+
+		
+
 	});
 
-	// Defer @mapbox/mapbox-gl-draw — it's only needed while editing an area, so it
-	// stays out of the initial map chunk. Loaded on first draw, and prefetched on
-	// idle once the map is ready so the first edit has no perceptible delay.
+
+
+
 	let DrawControl = $state<Component<{ map: MapType }> | null>(null);
 	let drawRequested = false;
 	function loadDrawControl() {
@@ -63,15 +175,6 @@
 		return () => (w.cancelIdleCallback ? w.cancelIdleCallback(id) : clearTimeout(id));
 	});
 
-	// dragPan stays enabled in every mode — mapbox-gl-draw's own pointer handlers
-	// take precedence over its features (vertices, midpoints, polygon body) while
-	// still letting the user pan between edits. The canvas cursor is left to
-	// mapbox-gl-draw, which sets contextual cursors per mode (crosshair while
-	// drawing, move/grab on vertex handles, etc.).
-
-	// Read-only connection polygon layer source — derived from the store.
-	// Excludes the actively-edited connection (mapbox-gl-draw owns its geometry)
-	// and any connections whose category is hidden.
 	const connectionFeatures = $derived.by<FeatureCollection>(() => {
 		const activeId = store.mode.type === 'draw' ? store.mode.connectionId : null;
 		const features: Feature[] = [];
@@ -106,39 +209,101 @@
 	}
 
 	function handlePolygonEnter(e: MapLayerMouseEvent) {
-		if (!map) return;
-		if (store.mode.type === 'draw') return;
-		const id = (e.features?.[0]?.properties as { id?: string } | undefined)?.id;
-		if (!id) return;
-		if (hoveredId && hoveredId !== id) {
-			map.setFeatureState({ source: 'connections', id: hoveredId }, { hovered: false });
-		}
-		hoveredId = id;
-		map.setFeatureState({ source: 'connections', id }, { hovered: true });
-		map.getCanvas().style.cursor = 'pointer';
-	}
+ 		 if (!map) return;
+ 		 if (store.mode.type === 'draw') return;
 
-	function handlePolygonLeave() {
-		if (!map) return;
-		if (hoveredId) {
-			map.setFeatureState({ source: 'connections', id: hoveredId }, { hovered: false });
-			hoveredId = null;
-		}
-		if (store.mode.type !== 'draw') {
-			map.getCanvas().style.cursor = '';
-		}
-	}
+  	const id = (e.features?.[0]?.properties as { id?: string } | undefined)?.id;
+  		 if (!id) return;
 
-	function handleMapClick() {
-		if (store.mode.type === 'idle') {
-			store.selectConnection(null);
-		}
+ 		 if (hoveredId && hoveredId !== id) {
+    		map?.setFeatureState({ source: 'connections', id: hoveredId }, { hovered: false });
+  		}
+
+ 		 hoveredId = id;
+
+  	map?.setFeatureState({ source: 'connections', id }, { hovered: true });
+
+	const canvas = map?.getCanvas();
+	if (canvas) {
+		canvas.style.cursor = 'pointer';
 	}
+	}	
+
+function handlePolygonLeave() {
+  if (!map) return;
+
+  if (hoveredId) {
+    map?.setFeatureState({ source: 'connections', id: hoveredId }, { hovered: false });
+    hoveredId = null;
+  }
+
+  if (store.mode.type !== 'draw') {
+    const canvas = map?.getCanvas();
+    if (canvas) {
+      canvas.style.cursor = '';
+    }
+  }
+}
+
+function handleBedrockClick(e: MapLayerMouseEvent) {
+  console.log("Bedrock handler fired"); // TEMP DEBUG
+
+  const props = e.features?.[0]?.properties;
+  if (!props) {
+    console.log("No Bedrock props found");
+    return;
+  }
+
+  store.setPopup({
+    type: 'bedrock',
+    props,
+    lngLat: [e.lngLat.lng, e.lngLat.lat]
+  });
+
+  e.originalEvent.stopPropagation();
+}
+
+function handleMapClick() {
+	if (store.mode.type === 'idle') {
+		store.selectConnection(null);
+	}
+}
+
+function handleMapLoad() {
+  if (!map) return;
+
+  console.log("Map loaded, attaching handlers");
+
+  map.on('click', 'Bedrock-fill', handleBedrockClick);
+
+  map.on('click', 'lsoa-overlay-fill', handleLayerClick('lsoaexe'));
+
+  map.on('click', 'CountryParks-fill', handleLayerClick('countryparks'));
+ 
+  map.on('click', 'WMS-fill', handleLayerClick('wms'));
+
+  map.on('click', 'Exe_Rivers-fill', handleLayerClick('exerivers'));
+
+  map.on('click', 'Exe_Boarders-fill', handleLayerClick('exeboarders'));
+
+  map.on('click', 'Flood_Risk-fill', handleLayerClick('floodrisk'));
+
+  map.on('click', 'Wetland-fill', handleLayerClick('wetland'));
+ 
+  map.on('click', 'Exe_Rainforest-fill', handleLayerClick('exerainforest'));
+
+  map.on('click', 'Salmon_Migration-fill', handleLayerClick('salmonmigration'));
+
+  map.on('click', 'Tempurate_Rainforest-fill', handleLayerClick('temperaterainforest'));
+}
+
+
+
+
 </script>
 
 {#if browser}
 	<div class="relative w-full h-full overflow-hidden">
-		<PMTilesProtocol />
 		{#if !mapStyle}
 			<div class="absolute inset-0 flex items-center justify-center bg-background">
 				<div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
@@ -146,7 +311,7 @@
 		{/if}
 		{#if mapStyle}
 			<MapLibre
-				bind:map
+				bind:this={mapComponent}
 				class="w-full h-full"
 				{...MAP_CONFIG}
 				attributionControl={false}
@@ -155,6 +320,184 @@
 			>
 				<NavigationControl position="bottom-right" />
 
+				{#if riverData && !store.hiddenLayers.has('river')}
+					<GeoJSONSource id="river-overlay" data={riverData}>
+						<FillLayer
+							id="river-overlay-fill"
+							paint={{ 'fill-color': '#4b86a8', 'fill-opacity': 0.18 }}
+						/>
+						<LineLayer
+							id="river-overlay-line"
+							paint={{ 'line-color': '#2e6688', 'line-width': 1.5, 'line-opacity': 0.8 }}
+						onclick={handleLayerClick('riverexe')}
+						/>
+					</GeoJSONSource>
+				{/if}
+
+				{#if lsoaData && !store.hiddenLayers.has('lsoa') && !store.hiddenCategories.has('Environmental')}
+					<GeoJSONSource id="lsoa-overlay" data={lsoaData}>
+						<FillLayer
+							id="lsoa-overlay-fill"
+							paint={{ 'fill-color': CATEGORY_COLOURS.Environmental, 'fill-opacity': 0.04 }}
+						/>
+						<LineLayer
+							id="lsoa-overlay-line"
+							paint={{ 'line-color': CATEGORY_COLOURS.Environmental, 'line-width': 0.8, 'line-opacity': 0.55 }}
+						onclick={handleLayerClick('lsoaexe')}
+						/>
+					</GeoJSONSource>
+				{/if}
+
+				{#if countryParksData && !store.hiddenLayers.has('CountryParks') && !store.hiddenCategories.has('Recreational')}
+					<GeoJSONSource id="CountryParks-overlay" data={countryParksData}>
+        				<FillLayer
+           					id="CountryParks-fill"
+            				paint={{'fill-color': CATEGORY_COLOURS.Recreational,'fill-opacity': 0.18 }}
+						/>
+        				<LineLayer
+            				id="CountryParks-line"
+            				paint={{'line-color': CATEGORY_COLOURS.Recreational, 'line-width': 1, 'line-opacity': 0.8, }}
+        				onclick={handleLayerClick('countryparks')}
+						/>
+    				</GeoJSONSource>
+				{/if}
+
+				{#if bedrockData && !store.hiddenLayers.has('Exe_Bedrock') && !store.hiddenCategories.has('Environmental')}
+					<GeoJSONSource id="Bedrock-overlay" data={bedrockData}>
+  						<LineLayer
+    						id="Bedrock-line"
+								paint={{
+								'line-color': CATEGORY_COLOURS.Environmental,
+								'line-width': 1,
+								'line-opacity': 0.8
+								}}
+						/>
+
+						<FillLayer
+							id="Bedrock-fill"
+							paint={{
+							'fill-color': CATEGORY_COLOURS.Environmental,
+							'fill-opacity': 0.18
+							}}
+						/>
+					</GeoJSONSource>
+			{/if}
+
+
+
+
+			{#if wmsData && !store.hiddenLayers.has('WMS') && !store.hiddenCategories.has('Educational')}
+				<GeoJSONSource id="Exe_WMS-overlay" data={wmsData}>
+	        		<CircleLayer
+	    			id="wms-circle"
+	        			paint={{
+					'circle-color': CATEGORY_COLOURS.Educational,
+					'circle-radius': 4,
+					'circle-opacity': 0.85,
+				}}
+				onclick={handleLayerClick('wms')}
+				/>
+				</GeoJSONSource>
+			{/if}
+
+			{#if riverexeData && !store.hiddenLayers.has('Exe_Rivers') && !store.hiddenCategories.has('Environmental')}
+				<GeoJSONSource id="exeriver-overlay" data={riverexeData}>
+					<LineLayer
+					id="riverexe-line"
+					paint={{
+						'line-color': CATEGORY_COLOURS.Environmental,
+						'line-width': 2.5,
+						'line-opacity': 0.95,
+					}}
+					layout={{
+						'line-join': 'round',
+						'line-cap': 'round',
+					}}
+					onclick={handleLayerClick('exerivers')}
+					/>
+				</GeoJSONSource>
+				{/if}
+
+			{#if boardersData && !store.hiddenLayers.has('Exe_Boarders') && !store.hiddenCategories.has('Environmental')}
+				<GeoJSONSource id="boarders-overlay" data={boardersData}>
+					<LineLayer
+					id="boarders-line"
+					paint={{
+						'line-color': CATEGORY_COLOURS.Environmental,
+						'line-width': 2.5,
+						'line-opacity': 0.95,
+					}}
+					layout={{
+						'line-join': 'round',
+						'line-cap': 'round',
+					}}
+					onclick={handleLayerClick('exeboarders')}
+					/>
+				</GeoJSONSource>
+				{/if}
+			
+			{#if floodriskData && !store.hiddenLayers.has('Flood_Risk') && !store.hiddenCategories.has('Environmental')}
+				<GeoJSONSource id="floodrisk-overlay" data={floodriskData}>
+					<LineLayer
+					id="floodrisk-line"
+					paint={{
+						'line-color': CATEGORY_COLOURS.Environmental,
+						'line-width': 2.5,
+						'line-opacity': 0.95,
+					}}
+					layout={{
+						'line-join': 'round',
+						'line-cap': 'round',
+					}}
+					onclick={handleLayerClick('floodrisk')}
+					/>
+				</GeoJSONSource>
+				{/if}
+			
+			{#if wetlandData && !store.hiddenLayers.has('Wetlands') && !store.hiddenCategories.has('Environmental')}
+				<GeoJSONSource id="wetlands-overlay" data={wetlandData}>
+					<FillLayer
+					id="wetlands-fill"
+					paint={{ 'fill-color': CATEGORY_COLOURS.Environmental, 
+					'fill-opacity': 0.18 }}
+					onclick={handleLayerClick('wetland')}
+					/>
+					</GeoJSONSource>
+				{/if}
+
+			{#if exerfData && !store.hiddenLayers.has('Exe_Rainforest') && !store.hiddenCategories.has('Habitat')}
+				<GeoJSONSource id="exerf-overlay" data={exerfData}>
+					<FillLayer
+					id="exerf-fill"
+					paint={{ 'fill-color': CATEGORY_COLOURS.Habitat,
+					'fill-opacity': 0.18 }}
+					onclick={handleLayerClick('exerainforest')}
+					/>
+					</GeoJSONSource>
+				{/if}
+
+			{#if salmigData && !store.hiddenLayers.has('Salmon_Migration') && !store.hiddenCategories.has('Habitat')}
+				<GeoJSONSource id="salmig-overlay" data={salmigData}>
+					<FillLayer
+					id="salmig-fill"
+					paint={{ 'fill-color': CATEGORY_COLOURS.Habitat,
+					'fill-opacity': 0.18 }}
+					onclick={handleLayerClick('salonmigration')}
+					/>
+				</GeoJSONSource>
+				{/if}
+		
+			{#if temprfData && !store.hiddenLayers.has('Temperate_Rainforests') && !store.hiddenCategories.has('Habitat')}
+				<GeoJSONSource id="temprf-overlay" data={temprfData}>
+					<FillLayer
+					id="temprf-fill"
+					paint={{ 'fill-color': CATEGORY_COLOURS.Habitat,
+					'fill-opacity': 0.18 }}
+					onclick={handleLayerClick('temperaterainforest')}
+					/>	
+				</GeoJSONSource>
+				{/if}
+			
 				<SelectionBanner />
 				<MapLegend />
 
@@ -163,7 +506,6 @@
 					<DC {map} />
 				{/if}
 
-				<!-- Connection polygon overlays (read-only). -->
 				<GeoJSONSource id="connections" data={connectionFeatures} promoteId="id">
 					<FillLayer
 						id="connections-fill"
@@ -175,25 +517,32 @@
 					<LineLayer id="connections-line" paint={CONNECTION_LINE_PAINT} />
 				</GeoJSONSource>
 
-				<!-- Attribution -->
 				<div
 					class="absolute bottom-1 left-1 z-10 text-[9px] text-muted-ink bg-paper/90 border border-rule
 					       px-1.5 py-0.5 rounded-sm pointer-events-none"
 				>
 					© <a href="https://openstreetmap.org" class="pointer-events-auto underline-offset-1 hover:underline" target="_blank" rel="noopener">OpenStreetMap</a>
-					· <a href="https://protomaps.com" class="pointer-events-auto underline-offset-1 hover:underline" target="_blank" rel="noopener">Protomaps</a>
 					· ONS Open Geography
 				</div>
 
-				{#if store.selectedConnection && store.mode.type === 'idle'}
+				{#if store.popup}
+ 					 {#if POPUP_COMPONENTS[store.popup.type] === undefined}
+					<div class="p-3 bg-red-200 text-red-900">
+					Popup component NOT FOUND for type: {store.popup.type}
+					</div>
+				{:else}
 					<MapPopup
-						lnglat={store.selectedConnection.lngLat}
-						onclose={() => store.selectConnection(null)}
-						component={ConnectionPopup}
-						props={{ connectionId: store.selectedConnection.connectionId }}
+					lnglat={store.popup.lngLat}
+					onclose={() => store.setPopup(null)}
+					component={POPUP_COMPONENTS[store.popup.type]}
+					props={store.popup.props}
 					/>
 				{/if}
+			{/if}
+
+
 			</MapLibre>
+			
 		{/if}
 	</div>
 {/if}

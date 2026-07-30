@@ -1,5 +1,3 @@
-// See https://kit.svelte.dev/docs/types#app
-
 interface D1PreparedStatement {
 	bind(...values: unknown[]): D1PreparedStatement;
 	all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
@@ -14,9 +12,6 @@ interface D1Database {
 
 declare global {
 	namespace App {
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
 		interface Platform {
 			env?: {
 				DB: D1Database;

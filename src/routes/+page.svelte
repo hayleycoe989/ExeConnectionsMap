@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { Menu } from '@lucide/svelte';
-	import { store } from '$lib/store.svelte';
-	import ConnectionPanel from '$lib/components/ConnectionPanel.svelte';
-	import ConnectionForm from '$lib/components/ConnectionForm.svelte';
-	import type { PageData } from './$types';
+  import { browser } from '$app/environment';
+  import { Menu } from '@lucide/svelte';
+  import { store } from '$lib/store.svelte';
+  import ConnectionPanel from '$lib/components/ConnectionPanel.svelte';
+  import ConnectionForm from '$lib/components/ConnectionForm.svelte';
+  import type { PageData } from './$types';
 
-	let { data }: { data: PageData } = $props();
-	store.init(data.connections);
+  const p = $props();
+  const pageData = p.data as PageData;
 
-	let panelOpen = $state(false);
+  store.init(pageData.connections);
 
-	// Code-split the map. maplibre-gl + the map components are ~1.2 MB and would
-	// otherwise sit in the page bundle and block hydration of the whole shell.
-	// Kicking off the dynamic import here (at module run) starts that chunk
-	// downloading in parallel while the sidebar stays instantly interactive.
-	const mapPromise = browser ? import('$lib/components/Map.svelte') : null;
+  let panelOpen = $state(false);
+
+  const mapPromise = browser ? import('$lib/components/Map.svelte') : null;
 </script>
 
+
+
+
 <div class="relative md:flex w-screen h-screen overflow-hidden">
-	<!-- Mobile backdrop -->
 	{#if panelOpen}
 		<button
 			type="button"
@@ -45,7 +45,6 @@
 		{/if}
 	</main>
 
-	<!-- Mobile: button to open the connections panel -->
 	<button
 		type="button"
 		onclick={() => (panelOpen = true)}

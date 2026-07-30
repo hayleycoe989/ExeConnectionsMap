@@ -1,13 +1,3 @@
-/**
- * filter-lsoas.ts
- *
- * Reads lsoa.geojson (25 MB, all England LSOAs) from the project root and writes
- * static/lsoa-exe.geojson containing only LSOAs whose centroid is within 10 miles
- * of any vertex on the River Exe line in river-exe.geojson.
- *
- * Usage: npm run filter-lsoas
- */
-
 import { createReadStream, writeFileSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -22,9 +12,8 @@ const { pick } = Pick;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 
-const BUFFER_KM = 10 * 1.60934; // 10 miles in km
+const BUFFER_KM = 10 * 1.60934;
 
-// Broad bounding box pre-filter (generous margin around Devon/Somerset)
 const BBOX = { minLng: -4.2, maxLng: -2.6, minLat: 50.2, maxLat: 51.2 };
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -37,7 +26,6 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Extract all coordinate vertices from the river GeoJSON
 function extractRiverVertices(geojsonPath: string): [number, number][] {
 	const data = JSON.parse(readFileSync(geojsonPath, 'utf-8')) as {
 		features: Array<{
@@ -75,7 +63,6 @@ function extractRiverVertices(geojsonPath: string): [number, number][] {
 		}
 	}
 
-	// Sub-sample to at most 500 vertices to keep distance checks fast
 	if (vertices.length > 500) {
 		const step = Math.ceil(vertices.length / 500);
 		return vertices.filter((_, i) => i % step === 0);
@@ -122,8 +109,6 @@ function main() {
 
 	const inputStream = createReadStream(lsoaPath);
 
-	// GeoJSON is { type: "FeatureCollection", features: [...] }
-	// We pick the features array and stream it
 	const pipeline = inputStream
 		.pipe(parser())
 		.pipe(pick({ filter: 'features' }))
@@ -138,10 +123,8 @@ function main() {
 		const lng = Number(props.LONG);
 		if (!lat || !lng) return;
 
-		// Quick bbox pre-filter
 		if (lng < BBOX.minLng || lng > BBOX.maxLng || lat < BBOX.minLat || lat > BBOX.maxLat) return;
 
-		// Precise distance filter
 		const dist = minDistanceToRiver(lat, lng, riverVertices);
 		if (dist <= BUFFER_KM) {
 			features.push(feature);
