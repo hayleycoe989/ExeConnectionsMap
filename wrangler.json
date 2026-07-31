@@ -1,22 +1,18 @@
 {
-	"name": "river-exe",
-	"compatibility_date": "2025-01-01",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
-	"pages_build_output_dir": ".svelte-kit/cloudflare",
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "river-exe-stakeholders",
-			"database_id": "1f7cf105-2342-4500-b672-2b3b9cfbc57c",
-			"preview_database_id": "1f7cf105-2342-4500-b672-2b3b9cfbc57c"
-		},
-		{
-			"binding": "river_exe_stakeholders",
-			"database_name": "river-exe-stakeholders",
-			"database_id": "a45bd0ef-ee11-40e0-b5ea-835ff14f90f1",
-			"remote": true
-		}
-	]
+  "name": "river-exe",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": ".svelte-kit/cloudflare/_worker.js/index.js",
+  "assets": {
+    "directory": ".svelte-kit/cloudflare",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "river-exe-stakeholders",
+      "database_id": "a45bd0ef-ee11-40e0-b5ea-835ff14f90f1",
+      "preview_database_id": "a45bd0ef-ee11-40e0-b5ea-835ff14f90f1"
+    }
+  ]
 }

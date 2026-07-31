@@ -1,8 +1,6 @@
 LSOA/**
-*.geojson
 *.pmtiles
 node_modules/**
-migrations/**
 .svelte-kit/**
 .wrangler/**
 .DS_Store
