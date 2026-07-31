@@ -7,3 +7,6 @@ migrations/**
 .wrangler/**
 .DS_Store
 .env
+river-exe/
+*.dll
+*.exe
