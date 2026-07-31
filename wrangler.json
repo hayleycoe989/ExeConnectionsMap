@@ -1,5 +1,5 @@
 {
-  "name": "river-exe",
+  "name": "execonnectionsmap",
   "compatibility_date": "2025-01-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": ".svelte-kit/cloudflare/_worker.js/index.js",
