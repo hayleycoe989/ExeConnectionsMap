@@ -7,7 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"deploy": "npm run build && npx wrangler pages deploy .svelte-kit/cloudflare",
+		"deploy": "npm run build && npx wrangler deploy .svelte-kit/cloudflare",
 		"filter-lsoas": "tsx scripts/filter-lsoas.ts",
 		"build-lsoa-tiles": "tippecanoe -o static/lsoa-exe.pmtiles --layer=lsoa --minimum-zoom=6 --maximum-zoom=12 --no-feature-limit --no-tile-size-limit --no-line-simplification --no-tiny-polygon-reduction --force static/lsoa-exe.geojson"
 	},
