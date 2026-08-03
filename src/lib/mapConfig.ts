@@ -44,13 +44,6 @@ export const CATEGORY_LAYERS: Partial<
 	]
 };
 
-export const MAP_LAYER_GROUPS = [
-	{
-		id: 'hydrology',
-		label: 'Hydrology',
-		layers: [{ id: 'river', label: 'River Exe' }],
-	},
-] as const;
 
 const expr = <T>(v: unknown) => v as unknown as T;
 
