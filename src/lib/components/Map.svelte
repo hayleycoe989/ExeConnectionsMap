@@ -66,7 +66,6 @@ let map = $state<MapType | null>(null);
 	import TemperateRainforestPopup from './TemperateRainforestPopup.svelte';
 
 	const POPUP_COMPONENTS: Record<string, any> = {
-	riverexe: RiverExePopup,
 	lsoaexe: LsoaExePopup,
 	countryparks: CountryParksPopup,
 	bedrock: BedrockPopup,
