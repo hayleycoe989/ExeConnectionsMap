@@ -27,7 +27,7 @@ export const CATEGORY_LAYERS: Partial<
 		{id: 'lsoa', label: 'LSOA boundaries' },
 		{id: `Exe_Bedrock`, label: `Bedrock Geology` },
 		{id: 'Exe_Rivers', label: 'The River Exe' },
-		{id: 'Exe_Boarders', label: 'Exe Catchment Boarders' },
+		{id: 'Exe_Boarders', label: 'Exe Catchment Extent' },
 		{id: 'Flood_Risk', label: 'Flood Risk'},
 		{id: 'Wetland', label: 'Wetlands'}
 	],
