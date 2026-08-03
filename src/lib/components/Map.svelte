@@ -53,8 +53,6 @@ let map = $state<MapType | null>(null);
   		};
 	}
 
-
-	import RiverExePopup from './RiverExePopup.svelte';
 	import LsoaExePopup from './LsoaExePopup.svelte';
 	import CountryParksPopup from './CountryParksPopup.svelte';
 	import BedrockPopup from './BedrockPopup.svelte';
@@ -85,7 +83,6 @@ let map = $state<MapType | null>(null);
 
 	
 	let mapStyle = $state<StyleSpecification | undefined>();
-	let riverData = $state<FeatureCollection | null>(null);
 	let lsoaData = $state<FeatureCollection | null>(null);
 	let countryParksData = $state<FeatureCollection | null>(null);
 	let bedrockData = $state<FeatureCollection | null>(null);
@@ -134,7 +131,6 @@ let map = $state<MapType | null>(null);
 
 		]);
 
-		if (riverResponse.ok) riverData = await riverResponse.json();
 		if (lsoaResponse.ok) lsoaData = await lsoaResponse.json();
 		if (countryParksResponse.ok) countryParksData = await countryParksResponse.json();
 		if (bedrockResponse.ok) bedrockData = await bedrockResponse.json();
@@ -320,19 +316,6 @@ function handleMapLoad() {
 			>
 				<NavigationControl position="bottom-right" />
 
-				{#if riverData && !store.hiddenLayers.has('river')}
-					<GeoJSONSource id="river-overlay" data={riverData}>
-						<FillLayer
-							id="river-overlay-fill"
-							paint={{ 'fill-color': '#4b86a8', 'fill-opacity': 0.18 }}
-						/>
-						<LineLayer
-							id="river-overlay-line"
-							paint={{ 'line-color': '#2e6688', 'line-width': 1.5, 'line-opacity': 0.8 }}
-						onclick={handleLayerClick('riverexe')}
-						/>
-					</GeoJSONSource>
-				{/if}
 
 				{#if lsoaData && !store.hiddenLayers.has('lsoa') && !store.hiddenCategories.has('Environmental')}
 					<GeoJSONSource id="lsoa-overlay" data={lsoaData}>
