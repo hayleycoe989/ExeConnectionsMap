@@ -44,6 +44,8 @@ export const CATEGORY_LAYERS: Partial<
 	]
 };
 
+export const MAP_LAYER_GROUPS = [
+] as const;
 
 const expr = <T>(v: unknown) => v as unknown as T;
 
