@@ -13,11 +13,11 @@ export const MAP_CONFIG = {
 };
 
 export const CATEGORY_COLOURS: Record<ConnectionCategory, string> = {
-	Environmental: '#3a7a52',
-	Recreational: '#9c5b2c',
-	Educational: '#3d5a8a',
-	Commercial: '#7a4a78',
-	Habitat: '#a2a457'
+	Environmental: '#1b9e77',
+	Recreational: '#d95f02',
+	Educational: '#7570b3',
+	Commercial: '#e7298a',
+	Habitat: '#66a61e'
 };
 
 export const CATEGORY_LAYERS: Partial<
