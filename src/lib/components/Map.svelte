@@ -96,6 +96,7 @@ let map = $state<MapType | null>(null);
 
 
 	onMount(async () => {
+		store.setPopup(null);
 		const res = await fetch('/basemap-style.json');
 		const style = await res.json();
 		mapStyle = style;
