@@ -1,12 +1,17 @@
 import type { AppMode, ConnectionClickInfo, Connection, ConnectionFormData } from '$lib/types';
 import type { Polygon } from 'geojson';
+import { CATEGORY_LAYERS } from '$lib/mapConfig';
+
+const ALL_LAYER_IDS = Object.values(CATEGORY_LAYERS)
+	.flat()
+	.map((layer) => layer.id);
 
 function createStore() {
 	let connections = $state<Connection[]>([]);
 	let mode = $state<AppMode>({ type: 'idle' });
 	let selectedConnection = $state<ConnectionClickInfo | null>(null);
 	let hiddenCategories = $state(new Set<string>());
-	let hiddenLayers = $state(new Set<string>());
+	let hiddenLayers = $state(new Set<string>(ALL_LAYER_IDS));
 	let popup = $state<any | null>(null);
 
 
