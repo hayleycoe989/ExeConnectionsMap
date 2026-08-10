@@ -434,7 +434,7 @@ function handleMapLoad() {
 				</GeoJSONSource>
 				{/if}
 			
-			{#if wetlandData && !store.hiddenLayers.has('Wetlands') && !store.hiddenCategories.has('Environmental')}
+			{#if wetlandData && !store.hiddenLayers.has('Wetland') && !store.hiddenCategories.has('Environmental')}
 				<GeoJSONSource id="wetlands-overlay" data={wetlandData}>
 					<FillLayer
 					id="wetlands-fill"
@@ -445,7 +445,7 @@ function handleMapLoad() {
 					</GeoJSONSource>
 				{/if}
 
-			{#if exerfData && !store.hiddenLayers.has('Exe_Rainforest') && !store.hiddenCategories.has('Habitat')}
+			{#if exerfData && !store.hiddenLayers.has('ExeRF') && !store.hiddenCategories.has('Habitat')}
 				<GeoJSONSource id="exerf-overlay" data={exerfData}>
 					<FillLayer
 					id="exerf-fill"
@@ -456,7 +456,7 @@ function handleMapLoad() {
 					</GeoJSONSource>
 				{/if}
 
-			{#if salmigData && !store.hiddenLayers.has('Salmon_Migration') && !store.hiddenCategories.has('Habitat')}
+			{#if salmigData && !store.hiddenLayers.has('SalMig') && !store.hiddenCategories.has('Habitat')}
 				<GeoJSONSource id="salmig-overlay" data={salmigData}>
 					<FillLayer
 					id="salmig-fill"
@@ -467,7 +467,7 @@ function handleMapLoad() {
 				</GeoJSONSource>
 				{/if}
 		
-			{#if temprfData && !store.hiddenLayers.has('Temperate_Rainforests') && !store.hiddenCategories.has('Habitat')}
+			{#if temprfData && !store.hiddenLayers.has('TempRF') && !store.hiddenCategories.has('Habitat')}
 				<GeoJSONSource id="temprf-overlay" data={temprfData}>
 					<FillLayer
 					id="temprf-fill"
