@@ -22,7 +22,18 @@ export const CATEGORY_COLOURS: Record<ConnectionCategory, string> = {
 	Habitat: '#66a61e'
 };
 
-//wgs colours
+// Distinct fill/border pairs for the individual Habitat layers, so they
+// stay visually related (same green family as CATEGORY_COLOURS.Habitat)
+// but are distinguishable from one another and readable against the basemap.
+export const HABITAT_LAYER_COLOURS: Record<string, { fill: string; border: string }> = {
+	ExeRF: { fill: '#66a61e', border: '#3d6511' },   // Temperate Rainforests — base habitat green
+	SalMig: { fill: '#1b9e77', border: '#0f5c45' },  // Salmon Migration — teal-green (water association)
+	TempRF: { fill: '#a6a61e', border: '#6b6b12' },  // Possible Temperate Rainforests — olive-yellow
+};
+
+// Official geological period colours per the Commission for the Geological
+// Map of the World (CGMW / ICS International Chronostratigraphic Chart),
+// the same standard BGS bedrock maps use for period-based colouring.
 export const BEDROCK_PERIOD_COLOURS: Record<string, string> = {
 	CARBONIFEROUS: '#66D9B2',
 	CRETACEOUS: '#7FC64E',
