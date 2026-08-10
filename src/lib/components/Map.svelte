@@ -18,6 +18,8 @@
 		CATEGORY_COLOURS,
 		CONNECTION_FILL_PAINT,
 		CONNECTION_LINE_PAINT,
+		BEDROCK_FILL_PAINT,
+		BEDROCK_LINE_PAINT,
 	} from '$lib/mapConfig';
 	import type { Component } from 'svelte';
 	import MapPopup from './MapPopup.svelte';
@@ -97,6 +99,7 @@ let map = $state<MapType | null>(null);
 
 	onMount(async () => {
 		store.setPopup(null);
+
 		const res = await fetch('/basemap-style.json');
 		const style = await res.json();
 		mapStyle = style;
@@ -351,7 +354,7 @@ function handleMapLoad() {
     						id="Bedrock-line"
 								paint={BEDROCK_LINE_PAINT}
 						/>
- 
+
 						<FillLayer
 							id="Bedrock-fill"
 							paint={BEDROCK_FILL_PAINT}
