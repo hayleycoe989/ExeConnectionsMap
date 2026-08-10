@@ -1,7 +1,7 @@
 <script lang="ts">
   const p = $props();
 
-  const areaKm2 = p.Shape__Are ? (p.Shape__Are / 1_000_000).toFixed(2) : null;
+  const areaKm2 = $derived(p.Shape__Are ? (p.Shape__Are / 1_000_000).toFixed(2) : null);
 </script>
 
 <div class="p-4 text-sm space-y-3 min-w-[220px]">
