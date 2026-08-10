@@ -20,6 +20,7 @@
 		CONNECTION_LINE_PAINT,
 		BEDROCK_FILL_PAINT,
 		BEDROCK_LINE_PAINT,
+		HABITAT_LAYER_COLOURS,
 	} from '$lib/mapConfig';
 	import type { Component } from 'svelte';
 	import MapPopup from './MapPopup.svelte';
@@ -449,9 +450,15 @@ function handleMapLoad() {
 				<GeoJSONSource id="exerf-overlay" data={exerfData}>
 					<FillLayer
 					id="exerf-fill"
-					paint={{ 'fill-color': CATEGORY_COLOURS.Habitat,
-					'fill-opacity': 0.18 }}
+					paint={{ 'fill-color': HABITAT_LAYER_COLOURS.ExeRF.fill,
+					'fill-opacity': 0.28 }}
 					onclick={handleLayerClick('exerainforest')}
+					/>
+					<LineLayer
+					id="exerf-line"
+					paint={{ 'line-color': HABITAT_LAYER_COLOURS.ExeRF.border,
+					'line-width': 1.5,
+					'line-opacity': 0.9 }}
 					/>
 					</GeoJSONSource>
 				{/if}
@@ -460,9 +467,15 @@ function handleMapLoad() {
 				<GeoJSONSource id="salmig-overlay" data={salmigData}>
 					<FillLayer
 					id="salmig-fill"
-					paint={{ 'fill-color': CATEGORY_COLOURS.Habitat,
-					'fill-opacity': 0.18 }}
+					paint={{ 'fill-color': HABITAT_LAYER_COLOURS.SalMig.fill,
+					'fill-opacity': 0.28 }}
 					onclick={handleLayerClick('salonmigration')}
+					/>
+					<LineLayer
+					id="salmig-line"
+					paint={{ 'line-color': HABITAT_LAYER_COLOURS.SalMig.border,
+					'line-width': 1.5,
+					'line-opacity': 0.9 }}
 					/>
 				</GeoJSONSource>
 				{/if}
@@ -471,10 +484,16 @@ function handleMapLoad() {
 				<GeoJSONSource id="temprf-overlay" data={temprfData}>
 					<FillLayer
 					id="temprf-fill"
-					paint={{ 'fill-color': CATEGORY_COLOURS.Habitat,
-					'fill-opacity': 0.18 }}
+					paint={{ 'fill-color': HABITAT_LAYER_COLOURS.TempRF.fill,
+					'fill-opacity': 0.28 }}
 					onclick={handleLayerClick('temperaterainforest')}
-					/>	
+					/>
+					<LineLayer
+					id="temprf-line"
+					paint={{ 'line-color': HABITAT_LAYER_COLOURS.TempRF.border,
+					'line-width': 1.5,
+					'line-opacity': 0.9 }}
+					/>
 				</GeoJSONSource>
 				{/if}
 			
