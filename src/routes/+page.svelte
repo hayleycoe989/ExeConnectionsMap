@@ -6,10 +6,9 @@
   import ConnectionForm from '$lib/components/ConnectionForm.svelte';
   import type { PageData } from './$types';
 
-  const p = $props();
-  const pageData = p.data as PageData;
+  let { data }: { data: PageData } = $props();
 
-  store.init(pageData.connections);
+  store.init(data.connections);
 
   let panelOpen = $state(false);
 
