@@ -1,17 +1,15 @@
 <script lang="ts">
-  // Svelte‑5 safe props extraction
   const p = $props();
-  const data = p.props as Record<string, any>;
 </script>
 
-{#if data}
+{#if p}
 <div class="p-4 text-sm space-y-4">
 
   <!-- Header -->
   <div class="border-b pb-2">
     <h3 class="font-bold text-lg tracking-wide">Exe River</h3>
-    {#if data.WB_NAME}
-      <p class="text-gray-600">{data.WB_NAME}</p>
+    {#if p.WB_NAME}
+      <p class="text-gray-600">{p.WB_NAME}</p>
     {/if}
   </div>
 
@@ -20,9 +18,9 @@
     <h4 class="font-semibold text-base">Water Body</h4>
 
     <div class="grid grid-cols-2 gap-2">
-      {#if data.WB_NAME}<div><strong>Name:</strong> {data.WB_NAME}</div>{/if}
-      {#if data.WB_ID}<div><strong>ID:</strong> {data.WB_ID}</div>{/if}
-      {#if data.version}<div class="col-span-2"><strong>Version:</strong> {data.version}</div>{/if}
+      {#if p.WB_NAME}<div><strong>Name:</strong> {p.WB_NAME}</div>{/if}
+      {#if p.WB_ID}<div><strong>ID:</strong> {p.WB_ID}</div>{/if}
+      {#if p.version}<div class="col-span-2"><strong>Version:</strong> {p.version}</div>{/if}
     </div>
   </div>
 
@@ -31,25 +29,25 @@
     <h4 class="font-semibold text-base">Basin & Categories</h4>
 
     <div class="grid grid-cols-2 gap-2">
-      {#if data.RBD_NAME}<div><strong>River Basin District:</strong> {data.RBD_NAME}</div>{/if}
-      {#if data.RBD_ID}<div><strong>RBD ID:</strong> {data.RBD_ID}</div>{/if}
+      {#if p.RBD_NAME}<div><strong>River Basin District:</strong> {p.RBD_NAME}</div>{/if}
+      {#if p.RBD_ID}<div><strong>RBD ID:</strong> {p.RBD_ID}</div>{/if}
 
-      {#if data.MNCAT_NAME}<div><strong>Main Category:</strong> {data.MNCAT_NAME}</div>{/if}
-      {#if data.MANCAT_ID}<div><strong>Main Category ID:</strong> {data.MANCAT_ID}</div>{/if}
+      {#if p.MNCAT_NAME}<div><strong>Main Category:</strong> {p.MNCAT_NAME}</div>{/if}
+      {#if p.MANCAT_ID}<div><strong>Main Category ID:</strong> {p.MANCAT_ID}</div>{/if}
 
-      {#if data.OPCAT_NAME}<div><strong>Operational Category:</strong> {data.OPCAT_NAME}</div>{/if}
-      {#if data.OPCAT_ID}<div><strong>Operational Category ID:</strong> {data.OPCAT_ID}</div>{/if}
+      {#if p.OPCAT_NAME}<div><strong>Operational Category:</strong> {p.OPCAT_NAME}</div>{/if}
+      {#if p.OPCAT_ID}<div><strong>Operational Category ID:</strong> {p.OPCAT_ID}</div>{/if}
 
-      {#if data.hydromorph}<div class="col-span-2"><strong>Hydromorphology:</strong> {data.hydromorph}</div>{/if}
+      {#if p.hydromorph}<div class="col-span-2"><strong>Hydromorphology:</strong> {p.hydromorph}</div>{/if}
     </div>
   </div>
 
   <!-- Reference -->
-  {#if data.url}
+  {#if p.url}
     <div class="space-y-1">
       <h4 class="font-semibold text-base">Reference</h4>
-      <a href={data.url} target="_blank" class="text-blue-600 underline">
-        {data.url}
+      <a href={p.url} target="_blank" class="text-blue-600 underline">
+        {p.url}
       </a>
     </div>
   {/if}
@@ -58,7 +56,7 @@
   <details class="mt-3">
     <summary class="cursor-pointer text-gray-600">Raw properties</summary>
     <pre class="text-xs mt-2 bg-gray-100 p-2 rounded border">
-{JSON.stringify(data, null, 2)}
+{JSON.stringify(p, null, 2)}
     </pre>
   </details>
 
