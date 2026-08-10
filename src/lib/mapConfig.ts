@@ -1,6 +1,8 @@
 import type { ExpressionSpecification } from 'maplibre-gl';
 import type { ConnectionCategory } from '$lib/types';
 
+const expr = <T>(v: unknown) => v as unknown as T;
+
 export const MAP_CONFIG = {
 	center: [-3.42, 50.62] as [number, number],
 	zoom: 11,
@@ -18,6 +20,57 @@ export const CATEGORY_COLOURS: Record<ConnectionCategory, string> = {
 	Educational: '#7570b3',
 	Commercial: '#e7298a',
 	Habitat: '#66a61e'
+};
+
+//wgs colours
+export const BEDROCK_PERIOD_COLOURS: Record<string, string> = {
+	CARBONIFEROUS: '#66D9B2',
+	CRETACEOUS: '#7FC64E',
+	DEVONIAN: '#CB8C37',
+	PALAEOGENE: '#FD9A52',
+	PERMIAN: '#F24040',
+	TRIASSIC: '#8033FF',
+};
+
+const BEDROCK_FALLBACK_COLOUR = '#cccccc';
+
+export const BEDROCK_FILL_PAINT = {
+	'fill-color': expr<ExpressionSpecification>([
+		'match',
+		['get', 'MAX_PERIOD'],
+		'CARBONIFEROUS', BEDROCK_PERIOD_COLOURS.CARBONIFEROUS,
+		'CRETACEOUS', BEDROCK_PERIOD_COLOURS.CRETACEOUS,
+		'DEVONIAN', BEDROCK_PERIOD_COLOURS.DEVONIAN,
+		'PALAEOGENE', BEDROCK_PERIOD_COLOURS.PALAEOGENE,
+		'PERMIAN', BEDROCK_PERIOD_COLOURS.PERMIAN,
+		'TRIASSIC', BEDROCK_PERIOD_COLOURS.TRIASSIC,
+		BEDROCK_FALLBACK_COLOUR,
+	] as const),
+	'fill-opacity': expr<ExpressionSpecification>([
+		'case',
+		['boolean', ['feature-state', 'hovered'], false], 0.75,
+		0.6,
+	]),
+};
+
+export const BEDROCK_LINE_PAINT = {
+	'line-color': expr<ExpressionSpecification>([
+		'match',
+		['get', 'MAX_PERIOD'],
+		'CARBONIFEROUS', BEDROCK_PERIOD_COLOURS.CARBONIFEROUS,
+		'CRETACEOUS', BEDROCK_PERIOD_COLOURS.CRETACEOUS,
+		'DEVONIAN', BEDROCK_PERIOD_COLOURS.DEVONIAN,
+		'PALAEOGENE', BEDROCK_PERIOD_COLOURS.PALAEOGENE,
+		'PERMIAN', BEDROCK_PERIOD_COLOURS.PERMIAN,
+		'TRIASSIC', BEDROCK_PERIOD_COLOURS.TRIASSIC,
+		BEDROCK_FALLBACK_COLOUR,
+	] as const),
+	'line-width': expr<ExpressionSpecification>([
+		'case',
+		['boolean', ['feature-state', 'hovered'], false], 1.5,
+		0.5,
+	]),
+	'line-opacity': 0.9 as number,
 };
 
 export const CATEGORY_LAYERS: Partial<
@@ -46,8 +99,6 @@ export const CATEGORY_LAYERS: Partial<
 
 export const MAP_LAYER_GROUPS = [
 ] as const;
-
-const expr = <T>(v: unknown) => v as unknown as T;
 
 const categoryMatch = (alpha: number) => [
 	'match',
