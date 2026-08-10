@@ -349,19 +349,13 @@ function handleMapLoad() {
 					<GeoJSONSource id="Bedrock-overlay" data={bedrockData}>
   						<LineLayer
     						id="Bedrock-line"
-								paint={{
-								'line-color': CATEGORY_COLOURS.Environmental,
-								'line-width': 1,
-								'line-opacity': 0.8
-								}}
+								paint={BEDROCK_LINE_PAINT}
 						/>
-
+ 
 						<FillLayer
 							id="Bedrock-fill"
-							paint={{
-							'fill-color': CATEGORY_COLOURS.Environmental,
-							'fill-opacity': 0.18
-							}}
+							paint={BEDROCK_FILL_PAINT}
+							onclick={handleBedrockClick}
 						/>
 					</GeoJSONSource>
 			{/if}
