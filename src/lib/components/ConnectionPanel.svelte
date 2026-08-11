@@ -169,7 +169,7 @@
 
 	<footer class="shrink-0 px-6 py-3 border-t border-rule">
 		<p class="text-[10px] uppercase tracking-[0.18em] text-muted-ink mb-2">With support from</p>
-		<ul class="grid grid-cols-3 gap-1.5">
+		<ul class="grid grid-cols-4 gap-1.5">
 			<li>
 				<a
 					href="https://friendsoftheriverexe.org/"
@@ -216,6 +216,23 @@
 					<enhanced:img
 						src="$lib/assets/public-engagement.png"
 						alt="Public Engagement with Research, University of Exeter"
+						sizes="96px"
+						class="max-h-full max-w-full w-auto object-contain"
+					/>
+				</a>
+			</li>
+			<li>
+				<a
+					href="https://tidelines.uk/"
+					target="_blank"
+					rel="noopener"
+					class="h-16 flex items-center justify-center rounded-sm bg-white border border-rule p-1.5 overflow-hidden
+					       transition hover:border-ink/25 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					aria-label="Tidelines (opens in a new tab)"
+				>
+					<enhanced:img
+						src="$lib/assets/tidelineslogo.jpg"
+						alt="Tidelines"
 						sizes="96px"
 						class="max-h-full max-w-full w-auto object-contain"
 					/>
