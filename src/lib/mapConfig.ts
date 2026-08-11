@@ -102,9 +102,9 @@ export const CATEGORY_LAYERS: Partial<
 		{id: 'WMS', label: 'Water Monitoring Sites' },
 	],	
 	Habitat: [
-		{id: 'ExeRF', label: 'Temperate Rainforests'},
+		{id: 'ExeRF', label: 'Possible Temperate Rainforests'},
 		{id: 'SalMig', label: 'Salmon Migration'},
-		{id: 'TempRF', label: 'Possible Temperate Rainforests'},
+		{id: 'TempRF', label: 'Temperate Rainforests'},
 	]
 };
 
