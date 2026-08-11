@@ -76,6 +76,17 @@
     </pre>
   </details>
 
+  <div class="pt-2 border-t">
+    <a
+      href="https://map.lostrainforestsofbritain.org/#"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-blue-600 underline text-xs"
+    >
+      View on Lost Rainforests of Britain map
+    </a>
+  </div>
+
 </div>
 {:else}
 <div class="p-3 bg-red-200 text-red-900">
