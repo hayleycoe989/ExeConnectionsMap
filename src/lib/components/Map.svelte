@@ -469,7 +469,7 @@ function handleMapLoad() {
 					id="salmig-fill"
 					paint={{ 'fill-color': HABITAT_LAYER_COLOURS.SalMig.fill,
 					'fill-opacity': 0.28 }}
-					onclick={handleLayerClick('salonmigration')}
+					onclick={handleLayerClick('salmonmigration')}
 					/>
 					<LineLayer
 					id="salmig-line"
