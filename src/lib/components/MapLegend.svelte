@@ -4,7 +4,7 @@
 	import { CONNECTION_CATEGORIES } from '$lib/types';
 	import { store } from '$lib/store.svelte';
 
-	let open = $state(true);
+	let open = $state(false);
 	let openLayerGroups = $state(new Set<string>(MAP_LAYER_GROUPS.map((group) => group.id)));
 
 	function toggleLayerGroup(groupId: string) {
@@ -24,7 +24,7 @@
 			       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset"
 			aria-expanded={open}
 		>
-			<span class="font-serif text-[13px] text-ink">Categories</span>
+			<span class="font-serif text-[13px] text-ink">Connections</span>
 			{#if open}
 				<ChevronUp class="w-3.5 h-3.5 text-muted-ink" />
 			{:else}
