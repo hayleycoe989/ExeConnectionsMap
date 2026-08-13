@@ -22,18 +22,14 @@ export const CATEGORY_COLOURS: Record<ConnectionCategory, string> = {
 	Habitat: '#66a61e'
 };
 
-// Distinct fill/border pairs for the individual Habitat layers, so they
-// stay visually related (same green family as CATEGORY_COLOURS.Habitat)
-// but are distinguishable from one another and readable against the basemap.
+
 export const HABITAT_LAYER_COLOURS: Record<string, { fill: string; border: string }> = {
 	ExeRF: { fill: '#66a61e', border: '#3d6511' },   // Temperate Rainforests — base habitat green
-	SalMig: { fill: '#1b9e77', border: '#0f5c45' },  // Salmon Migration — teal-green (water association)
+	SalMig: { fill: '#1b9e77', border: '#0f5c45' },  // Salmon Migration — teal-green association with water
 	TempRF: { fill: '#a6a61e', border: '#6b6b12' },  // Possible Temperate Rainforests — olive-yellow
 };
 
-// Official geological period colours per the Commission for the Geological
-// Map of the World (CGMW / ICS International Chronostratigraphic Chart),
-// the same standard BGS bedrock maps use for period-based colouring.
+
 export const BEDROCK_PERIOD_COLOURS: Record<string, string> = {
 	CARBONIFEROUS: '#66D9B2',
 	CRETACEOUS: '#7FC64E',
@@ -108,8 +104,72 @@ export const CATEGORY_LAYERS: Partial<
 	]
 };
 
+export const GROUP_COLOURS: Record<string, string> = {
+	administrative: '#1b9e77',
+	habitat: '#66a61e',
+	recreational: '#d95f02',
+	geographic: '#e7298a',
+	hydrological: '#7570b3',
+};
+
 export const MAP_LAYER_GROUPS = [
+	{
+		id: 'administrative',
+		label: 'Administrative',
+		layers: [
+			{ id: 'lsoa', label: 'LSOA boundaries' },
+		],
+	},
+	{
+		id: 'habitat',
+		label: 'Habitat',
+		layers: [
+			{ id: 'Wetland', label: 'Wetlands' },
+			{ id: 'TempRF', label: 'Temperate Rainforests' },
+			{ id: 'ExeRF', label: 'Possible Temperate Rainforests' },
+			{ id: 'SalMig', label: 'Salmon Migration' },
+		],
+	},
+	{
+		id: 'recreational',
+		label: 'Recreational',
+		layers: [
+			{ id: 'CountryParks', label: 'Country Parks' },
+		],
+	},
+	{
+		id: 'geographic',
+		label: 'Geographic',
+		layers: [
+			{ id: 'Exe_Boarders', label: 'Exe Catchment Extent' },
+			{ id: 'Exe_Bedrock', label: 'Bedrock Geology' },
+		],
+	},
+	{
+		id: 'hydrological',
+		label: 'Hydrological',
+		layers: [
+			{ id: 'Exe_Rivers', label: 'The River Exe' },
+			{ id: 'Flood_Risk', label: 'Flood Risk' },
+			{ id: 'WMS', label: 'Water Monitoring Sites' },
+		],
+	},
 ] as const;
+
+
+export const LAYER_SWATCH_COLOURS: Record<string, string> = {
+	lsoa: GROUP_COLOURS.administrative,
+	Exe_Bedrock: GROUP_COLOURS.geographic,
+	Exe_Boarders: GROUP_COLOURS.geographic,
+	Exe_Rivers: GROUP_COLOURS.hydrological,
+	Flood_Risk: GROUP_COLOURS.hydrological,
+	WMS: GROUP_COLOURS.hydrological,
+	Wetland: GROUP_COLOURS.habitat,
+	CountryParks: GROUP_COLOURS.recreational,
+	ExeRF: HABITAT_LAYER_COLOURS.ExeRF.fill,
+	SalMig: HABITAT_LAYER_COLOURS.SalMig.fill,
+	TempRF: HABITAT_LAYER_COLOURS.TempRF.fill,
+};
 
 const categoryMatch = (alpha: number) => [
 	'match',
