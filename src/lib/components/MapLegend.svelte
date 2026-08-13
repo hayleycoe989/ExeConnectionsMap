@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Eye, EyeOff, ChevronUp, ChevronDown } from '@lucide/svelte';
-	import { CATEGORY_COLOURS, CATEGORY_LAYERS, MAP_LAYER_GROUPS, HABITAT_LAYER_COLOURS } from '$lib/mapConfig';
+	import { CATEGORY_COLOURS, MAP_LAYER_GROUPS, LAYER_SWATCH_COLOURS } from '$lib/mapConfig';
 	import { CONNECTION_CATEGORIES } from '$lib/types';
 	import { store } from '$lib/store.svelte';
 
@@ -63,32 +63,6 @@
 							<Eye class="w-3 h-3 text-muted-ink/70 group-hover:text-muted-ink shrink-0" />
 						{/if}
 					</button>
-					{#each CATEGORY_LAYERS[cat] ?? [] as layer (layer.id)}
-						{@const layerHidden = store.hiddenLayers.has(layer.id)}
-						{@const swatchColour = HABITAT_LAYER_COLOURS[layer.id]?.fill ?? CATEGORY_COLOURS[cat]}
-						<button
-							type="button"
-							onclick={() => store.toggleLayerVisibility(layer.id)}
-							class="flex items-center gap-2 w-full pl-7 pr-2 py-1 rounded-sm text-left hover:bg-accent transition-colors group
-							       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-							aria-pressed={!layerHidden}
-							title={layerHidden ? `Show ${layer.label}` : `Hide ${layer.label}`}
-						>
-							<span
-								class="w-3.5 h-3 rounded-xs border border-rule shrink-0 transition-opacity"
-								style:background-color={swatchColour}
-								style:opacity={layerHidden ? 0.25 : 0.75}
-							></span>
-							<span class="font-serif text-[11px] flex-1 {layerHidden ? 'text-muted-ink line-through' : 'text-ink'}">
-								{layer.label}
-							</span>
-							{#if layerHidden}
-								<EyeOff class="w-3 h-3 text-muted-ink shrink-0" />
-							{:else}
-								<Eye class="w-3 h-3 text-muted-ink/70 group-hover:text-muted-ink shrink-0" />
-							{/if}
-						</button>
-					{/each}
 				{/each}
 			</div>
 		{/if}
@@ -124,7 +98,11 @@
 						aria-pressed={!hidden}
 						title={hidden ? `Show ${layer.label}` : `Hide ${layer.label}`}
 					>
-						<span class="w-3.5 h-3 rounded-xs border border-rule shrink-0 {hidden ? 'opacity-25' : ''}"></span>
+						<span
+							class="w-3.5 h-3 rounded-xs border border-rule shrink-0 transition-opacity"
+							style:background-color={LAYER_SWATCH_COLOURS[layer.id] ?? '#cccccc'}
+							style:opacity={hidden ? 0.25 : 0.75}
+						></span>
 						<span class="font-serif text-[11px] flex-1 {hidden ? 'text-muted-ink line-through' : 'text-ink'}">{layer.label}</span>
 						{#if hidden}
 							<EyeOff class="w-3 h-3 text-muted-ink shrink-0" />
