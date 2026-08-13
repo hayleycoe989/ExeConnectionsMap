@@ -16,6 +16,7 @@
 	import {
 		MAP_CONFIG,
 		CATEGORY_COLOURS,
+		GROUP_COLOURS,
 		CONNECTION_FILL_PAINT,
 		CONNECTION_LINE_PAINT,
 		BEDROCK_FILL_PAINT,
@@ -321,35 +322,35 @@ function handleMapLoad() {
 				<NavigationControl position="bottom-right" />
 
 
-				{#if lsoaData && !store.hiddenLayers.has('lsoa') && !store.hiddenCategories.has('Environmental')}
+				{#if lsoaData && !store.hiddenLayers.has('lsoa')}
 					<GeoJSONSource id="lsoa-overlay" data={lsoaData}>
 						<FillLayer
 							id="lsoa-overlay-fill"
-							paint={{ 'fill-color': CATEGORY_COLOURS.Environmental, 'fill-opacity': 0.04 }}
+							paint={{ 'fill-color': GROUP_COLOURS.administrative, 'fill-opacity': 0.04 }}
 						/>
 						<LineLayer
 							id="lsoa-overlay-line"
-							paint={{ 'line-color': CATEGORY_COLOURS.Environmental, 'line-width': 0.8, 'line-opacity': 0.55 }}
+							paint={{ 'line-color': GROUP_COLOURS.administrative, 'line-width': 0.8, 'line-opacity': 0.55 }}
 						onclick={handleLayerClick('lsoaexe')}
 						/>
 					</GeoJSONSource>
 				{/if}
 
-				{#if countryParksData && !store.hiddenLayers.has('CountryParks') && !store.hiddenCategories.has('Recreational')}
+				{#if countryParksData && !store.hiddenLayers.has('CountryParks')}
 					<GeoJSONSource id="CountryParks-overlay" data={countryParksData}>
         				<FillLayer
            					id="CountryParks-fill"
-            				paint={{'fill-color': CATEGORY_COLOURS.Recreational,'fill-opacity': 0.18 }}
+            				paint={{'fill-color': GROUP_COLOURS.recreational,'fill-opacity': 0.18 }}
 						/>
         				<LineLayer
             				id="CountryParks-line"
-            				paint={{'line-color': CATEGORY_COLOURS.Recreational, 'line-width': 1, 'line-opacity': 0.8, }}
+            				paint={{'line-color': GROUP_COLOURS.recreational, 'line-width': 1, 'line-opacity': 0.8, }}
         				onclick={handleLayerClick('countryparks')}
 						/>
     				</GeoJSONSource>
 				{/if}
 
-				{#if bedrockData && !store.hiddenLayers.has('Exe_Bedrock') && !store.hiddenCategories.has('Environmental')}
+				{#if bedrockData && !store.hiddenLayers.has('Exe_Bedrock')}
 					<GeoJSONSource id="Bedrock-overlay" data={bedrockData}>
   						<LineLayer
     						id="Bedrock-line"
@@ -367,12 +368,12 @@ function handleMapLoad() {
 
 
 
-			{#if wmsData && !store.hiddenLayers.has('WMS') && !store.hiddenCategories.has('Educational')}
+			{#if wmsData && !store.hiddenLayers.has('WMS')}
 				<GeoJSONSource id="Exe_WMS-overlay" data={wmsData}>
 	        		<CircleLayer
 	    			id="wms-circle"
 	        			paint={{
-					'circle-color': CATEGORY_COLOURS.Educational,
+					'circle-color': GROUP_COLOURS.hydrological,
 					'circle-radius': 4,
 					'circle-opacity': 0.85,
 				}}
@@ -381,12 +382,12 @@ function handleMapLoad() {
 				</GeoJSONSource>
 			{/if}
 
-			{#if riverexeData && !store.hiddenLayers.has('Exe_Rivers') && !store.hiddenCategories.has('Environmental')}
+			{#if riverexeData && !store.hiddenLayers.has('Exe_Rivers')}
 				<GeoJSONSource id="exeriver-overlay" data={riverexeData}>
 					<LineLayer
 					id="riverexe-line"
 					paint={{
-						'line-color': CATEGORY_COLOURS.Environmental,
+						'line-color': GROUP_COLOURS.hydrological,
 						'line-width': 2.5,
 						'line-opacity': 0.95,
 					}}
@@ -399,12 +400,12 @@ function handleMapLoad() {
 				</GeoJSONSource>
 				{/if}
 
-			{#if boardersData && !store.hiddenLayers.has('Exe_Boarders') && !store.hiddenCategories.has('Environmental')}
+			{#if boardersData && !store.hiddenLayers.has('Exe_Boarders')}
 				<GeoJSONSource id="boarders-overlay" data={boardersData}>
 					<LineLayer
 					id="boarders-line"
 					paint={{
-						'line-color': CATEGORY_COLOURS.Environmental,
+						'line-color': GROUP_COLOURS.geographic,
 						'line-width': 2.5,
 						'line-opacity': 0.95,
 					}}
@@ -417,12 +418,12 @@ function handleMapLoad() {
 				</GeoJSONSource>
 				{/if}
 			
-			{#if floodriskData && !store.hiddenLayers.has('Flood_Risk') && !store.hiddenCategories.has('Environmental')}
+			{#if floodriskData && !store.hiddenLayers.has('Flood_Risk')}
 				<GeoJSONSource id="floodrisk-overlay" data={floodriskData}>
 					<LineLayer
 					id="floodrisk-line"
 					paint={{
-						'line-color': CATEGORY_COLOURS.Environmental,
+						'line-color': GROUP_COLOURS.hydrological,
 						'line-width': 2.5,
 						'line-opacity': 0.95,
 					}}
@@ -435,18 +436,18 @@ function handleMapLoad() {
 				</GeoJSONSource>
 				{/if}
 			
-			{#if wetlandData && !store.hiddenLayers.has('Wetland') && !store.hiddenCategories.has('Environmental')}
+			{#if wetlandData && !store.hiddenLayers.has('Wetland')}
 				<GeoJSONSource id="wetlands-overlay" data={wetlandData}>
 					<FillLayer
 					id="wetlands-fill"
-					paint={{ 'fill-color': CATEGORY_COLOURS.Environmental, 
+					paint={{ 'fill-color': GROUP_COLOURS.habitat, 
 					'fill-opacity': 0.18 }}
 					onclick={handleLayerClick('wetland')}
 					/>
 					</GeoJSONSource>
 				{/if}
 
-			{#if exerfData && !store.hiddenLayers.has('ExeRF') && !store.hiddenCategories.has('Habitat')}
+			{#if exerfData && !store.hiddenLayers.has('ExeRF')}
 				<GeoJSONSource id="exerf-overlay" data={exerfData}>
 					<FillLayer
 					id="exerf-fill"
@@ -463,7 +464,7 @@ function handleMapLoad() {
 					</GeoJSONSource>
 				{/if}
 
-			{#if salmigData && !store.hiddenLayers.has('SalMig') && !store.hiddenCategories.has('Habitat')}
+			{#if salmigData && !store.hiddenLayers.has('SalMig')}
 				<GeoJSONSource id="salmig-overlay" data={salmigData}>
 					<FillLayer
 					id="salmig-fill"
@@ -480,7 +481,7 @@ function handleMapLoad() {
 				</GeoJSONSource>
 				{/if}
 		
-			{#if temprfData && !store.hiddenLayers.has('TempRF') && !store.hiddenCategories.has('Habitat')}
+			{#if temprfData && !store.hiddenLayers.has('TempRF')}
 				<GeoJSONSource id="temprf-overlay" data={temprfData}>
 					<FillLayer
 					id="temprf-fill"
