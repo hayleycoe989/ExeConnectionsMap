@@ -73,12 +73,14 @@ function createStore() {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(newConnection),
 		});
+		popup = null;
 		mode = { type: 'draw', connectionId: id };
 		return id;
 	}
 
 	function enterDrawMode(connectionId: string) {
 		selectedConnection = null;
+		popup = null;
 		mode = { type: 'draw', connectionId };
 	}
 
