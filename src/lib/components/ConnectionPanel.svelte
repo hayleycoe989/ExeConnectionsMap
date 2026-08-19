@@ -85,7 +85,7 @@
 		<button
 			type="button"
 			onclick={store.openForm}
-			disabled={store.mode.type === 'form'}
+			disabled={store.mode.type === 'form' || !store.publishEnabled}
 			class="w-full flex items-center justify-center gap-2 py-2 text-sm font-serif leading-none
 			       rounded-sm bg-primary text-primary-foreground shadow-sm
 			       hover:opacity-90 transition-opacity
@@ -93,8 +93,13 @@
 			       disabled:opacity-40 disabled:cursor-not-allowed"
 		>
 			<UserPlus class="w-3.5 h-3.5" />
-			Add a connection
+			{store.publishEnabled ? 'Add a connection' : 'Submissions closed'}
 		</button>
+		{#if !store.publishEnabled}
+			<p class="text-[10px] text-muted-ink text-center mt-1.5">
+				New connections aren't being accepted right now.
+			</p>
+		{/if}
 	</div>
 
 	<div class="h-px bg-rule mx-6"></div>
