@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Popup } from 'svelte-maplibre-gl';
   import type { Component } from 'svelte';
+  import { store } from '$lib/store.svelte';
 
   let {
     lnglat,
@@ -22,7 +23,7 @@
   {onclose}
   {offset}
   closeButton={false}
-  closeOnClick={true}
+  closeOnClick={store.mode.type !== 'draw'}
   maxWidth="none"
   class="z-20 modern-popup"
 >
