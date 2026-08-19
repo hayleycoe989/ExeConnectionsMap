@@ -344,7 +344,7 @@ function handleMapLoad() {
 							id="lsoa-overlay-line"
 							paint={{ 'line-color': GROUP_COLOURS.administrative, 'line-width': 0.8, 'line-opacity': 0.55 }}
 						onclick={handleLayerClick('lsoaexe')}
-						onmouseenter={handleInteractiveEnter}
+						onmousemove={handleInteractiveEnter}
 						onmouseleave={handleInteractiveLeave}
 						/>
 					</GeoJSONSource>
@@ -360,7 +360,7 @@ function handleMapLoad() {
             				id="CountryParks-line"
             				paint={{'line-color': GROUP_COLOURS.recreational, 'line-width': 1, 'line-opacity': 0.8, }}
         				onclick={handleLayerClick('countryparks')}
-        				onmouseenter={handleInteractiveEnter}
+        				onmousemove={handleInteractiveEnter}
         				onmouseleave={handleInteractiveLeave}
 						/>
     				</GeoJSONSource>
@@ -377,7 +377,7 @@ function handleMapLoad() {
 							id="Bedrock-fill"
 							paint={BEDROCK_FILL_PAINT}
 							onclick={handleBedrockClick}
-							onmouseenter={handleInteractiveEnter}
+							onmousemove={handleInteractiveEnter}
 							onmouseleave={handleInteractiveLeave}
 						/>
 					</GeoJSONSource>
@@ -396,7 +396,7 @@ function handleMapLoad() {
 					'circle-opacity': 0.85,
 				}}
 				onclick={handleLayerClick('wms')}
-				onmouseenter={handleInteractiveEnter}
+				onmousemove={handleInteractiveEnter}
 				onmouseleave={handleInteractiveLeave}
 				/>
 				</GeoJSONSource>
@@ -416,7 +416,7 @@ function handleMapLoad() {
 						'line-cap': 'round',
 					}}
 					onclick={handleLayerClick('exerivers')}
-					onmouseenter={handleInteractiveEnter}
+					onmousemove={handleInteractiveEnter}
 					onmouseleave={handleInteractiveLeave}
 					/>
 				</GeoJSONSource>
@@ -436,7 +436,7 @@ function handleMapLoad() {
 						'line-cap': 'round',
 					}}
 					onclick={handleLayerClick('exeboarders')}
-					onmouseenter={handleInteractiveEnter}
+					onmousemove={handleInteractiveEnter}
 					onmouseleave={handleInteractiveLeave}
 					/>
 				</GeoJSONSource>
@@ -456,7 +456,7 @@ function handleMapLoad() {
 						'line-cap': 'round',
 					}}
 					onclick={handleLayerClick('floodrisk')}
-					onmouseenter={handleInteractiveEnter}
+					onmousemove={handleInteractiveEnter}
 					onmouseleave={handleInteractiveLeave}
 					/>
 				</GeoJSONSource>
@@ -469,7 +469,7 @@ function handleMapLoad() {
 					paint={{ 'fill-color': GROUP_COLOURS.habitat, 
 					'fill-opacity': 0.18 }}
 					onclick={handleLayerClick('wetland')}
-					onmouseenter={handleInteractiveEnter}
+					onmousemove={handleInteractiveEnter}
 					onmouseleave={handleInteractiveLeave}
 					/>
 					</GeoJSONSource>
@@ -482,7 +482,7 @@ function handleMapLoad() {
 					paint={{ 'fill-color': HABITAT_LAYER_COLOURS.ExeRF.fill,
 					'fill-opacity': 0.28 }}
 					onclick={handleLayerClick('exerainforest')}
-					onmouseenter={handleInteractiveEnter}
+					onmousemove={handleInteractiveEnter}
 					onmouseleave={handleInteractiveLeave}
 					/>
 					<LineLayer
@@ -501,7 +501,7 @@ function handleMapLoad() {
 					paint={{ 'fill-color': HABITAT_LAYER_COLOURS.SalMig.fill,
 					'fill-opacity': 0.28 }}
 					onclick={handleLayerClick('salmonmigration')}
-					onmouseenter={handleInteractiveEnter}
+					onmousemove={handleInteractiveEnter}
 					onmouseleave={handleInteractiveLeave}
 					/>
 					<LineLayer
@@ -520,7 +520,7 @@ function handleMapLoad() {
 					paint={{ 'fill-color': HABITAT_LAYER_COLOURS.TempRF.fill,
 					'fill-opacity': 0.28 }}
 					onclick={handleLayerClick('temperaterainforest')}
-					onmouseenter={handleInteractiveEnter}
+					onmousemove={handleInteractiveEnter}
 					onmouseleave={handleInteractiveLeave}
 					/>
 					<LineLayer
