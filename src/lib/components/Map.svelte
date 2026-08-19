@@ -313,6 +313,7 @@ function handleMapLoad() {
 		{#if mapStyle}
 			<MapLibre
 				bind:this={mapComponent}
+				bind:map
 				class="w-full h-full"
 				{...MAP_CONFIG}
 				attributionControl={false}
