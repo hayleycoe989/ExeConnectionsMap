@@ -3,8 +3,7 @@
 </script>
 
 <div class="p-3 text-sm space-y-3">
-  <h3 class="font-bold">Possible Site of Temperate Rainforest</h3>
-  <pre class="text-xs">{JSON.stringify(p, null, 2)}</pre>
+  <h3 class="font-bold">Possible site of Temperate Rainforest</h3>
 
   <div class="pt-2 border-t">
     <a
