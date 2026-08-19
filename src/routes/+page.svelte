@@ -8,7 +8,7 @@
 
   let { data }: { data: PageData } = $props();
 
-  store.init(data.connections);
+  store.init(data.connections, data.canPublish);
 
   let panelOpen = $state(false);
 
