@@ -2,6 +2,13 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Connection, ConnectionCategory } from '$lib/types';
 import type { Polygon } from 'geojson';
+import { env } from '$env/dynamic/private';
+
+function publishingEnabled(): boolean {
+	const raw = env.PUBLISH;
+	if (raw === undefined) return true; // default: publishing on if unset
+	return raw.trim().toLowerCase() === 'true';
+}
 
 interface ConnectionRow {
 	id: string;
@@ -39,6 +46,13 @@ export const GET: RequestHandler = async ({ platform }) => {
 };
 
 export const POST: RequestHandler = async ({ request, platform }) => {
+	if (!publishingEnabled()) {
+		return json(
+			{ message: 'New connections are not currently being accepted.' },
+			{ status: 403 },
+		);
+	}
+
 	const connection = (await request.json()) as Connection;
 	const db = platform?.env?.DB;
 
