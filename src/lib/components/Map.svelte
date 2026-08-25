@@ -258,7 +258,7 @@ function handleInteractiveLeave() {
 }
 
 function handleBedrockClick(e: MapLayerMouseEvent) {
-  console.log("Bedrock handler fired"); // TEMP DEBUG
+  console.log("Bedrock handler fired"); 
 
   const props = e.features?.[0]?.properties;
   if (!props) {
